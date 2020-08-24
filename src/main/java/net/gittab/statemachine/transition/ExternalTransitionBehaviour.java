@@ -1,0 +1,61 @@
+package net.gittab.statemachine.transition;
+
+import net.gittab.statemachine.action.Action;
+import net.gittab.statemachine.guard.Guard;
+
+/**
+ * ExternalTransitionBehaviour.
+ *
+ * @author rookiedev
+ * @date 2020/8/24 15:22
+ **/
+public class ExternalTransitionBehaviour<S, E, T extends Transition<S, E>, C> extends TransitionBehaviour<S, E, T, C> {
+
+    private final Guard<S, E, T, C> guard;
+    private final Action<S, E, T, C> ifAction;
+    private Action<S, E, T, C> elseAction;
+
+    public ExternalTransitionBehaviour(T transition, Guard<S, E, T, C> guard, Action<S, E, T, C> ifAction) {
+        super(transition);
+        this.guard = guard;
+        this.ifAction = ifAction;
+    }
+
+    public ExternalTransitionBehaviour(T transition, Guard<S, E, T, C> guard, Action<S, E, T, C> ifAction, Action<S, E, T, C> elseAction) {
+        this(transition, guard, ifAction);
+        this.elseAction = elseAction;
+    }
+
+    @Override
+    public boolean isInternal() {
+        return false;
+    }
+
+    @Override
+    public boolean isGuardMet(T transition, C context) {
+        if(this.guard == null){
+            return true;
+        }
+        return this.guard.evaluate(transition, context);
+    }
+
+    @Override
+    public void action(T transition, C context) {
+        if(this.ifAction == null){
+            return;
+        }
+        if(isGuardMet(transition, context)){
+            this.ifAction.execute(transition, context);
+        }else if(this.elseAction != null){
+            this.elseAction.execute(transition, context);
+        }
+    }
+
+    @Override
+    public S transition(T transition, C context) {
+        if(isGuardMet(transition, context)){
+            return this.getTransition().transition();
+        }
+        return this.getTransition().getSource();
+    }
+}

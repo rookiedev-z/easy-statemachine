@@ -1,5 +1,7 @@
 package net.gittab.statemachine.action;
 
+import net.gittab.statemachine.transition.Transition;
+
 /**
  * Action.
  *
@@ -7,10 +9,10 @@ package net.gittab.statemachine.action;
  * @date 2020/8/21 3:03 下午
  **/
 @FunctionalInterface
-public interface Action {
+public interface Action<S, E, T extends Transition<S, E>, C> {
 
     /**
      * execute action.
      */
-    void execute();
+    void execute(T transition, C context);
 }
