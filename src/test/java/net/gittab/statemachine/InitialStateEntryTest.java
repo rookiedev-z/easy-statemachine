@@ -1,10 +1,11 @@
 package net.gittab.statemachine;
 
-import java.util.logging.Logger;
-
+import net.gittab.statemachine.action.Action;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.EventEnum;
 import net.gittab.statemachine.enums.StateEnum;
+import net.gittab.statemachine.transition.Transition;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,17 +17,42 @@ import org.junit.Test;
  **/
 public class InitialStateEntryTest {
 
-    Logger logger = Logger.getLogger(SimpleTest.class.getName());
-
     private StateMachine<StateEnum, EventEnum, String> fsm;
+
+    private StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryS1Action;
+
+    private StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryS11Action;
+
+    private StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryS12Action;
+
+    static class StatusAction<S, E, T extends Transition<S, E>, C> implements Action<S, E, T, C> {
+
+        private boolean status;
+
+        public StatusAction(){
+            this.status = false;
+        }
+
+        public boolean actionExecuted(){
+            return this.status;
+        }
+
+        @Override
+        public void execute(T transition, C context) {
+            this.status = true;
+        }
+    }
 
     @Before
     public void initial(){
+        entryS1Action = new StatusAction<>();
+        entryS11Action = new StatusAction<>();
+        entryS12Action = new StatusAction<>();
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.S1).onEntry((transition, context) -> logger.info("entry " + transition.getDestination() + " state"));
-        config.configure(StateEnum.S11).subStateOf(StateEnum.S1).onEntry((transition, context) -> logger.info("entry " + transition.getDestination() + " state"))
+        config.configure(StateEnum.S1).onEntry(entryS1Action);
+        config.configure(StateEnum.S11).subStateOf(StateEnum.S1).onEntry(entryS11Action)
         .permit(EventEnum.EVENT11, StateEnum.S12);
-        config.configure(StateEnum.S12).subStateOf(StateEnum.S1).onEntry((transition, context) -> logger.info("entry " + transition.getDestination() + " state"))
+        config.configure(StateEnum.S12).subStateOf(StateEnum.S1).onEntry(entryS12Action)
                 .permit(EventEnum.EVENT12, StateEnum.S11);
         fsm = new StateMachine<>(StateEnum.S11, config);
     }
@@ -34,11 +60,75 @@ public class InitialStateEntryTest {
     @Test
     public void initialStateActionsNotExecutedByDefault() {
 
-        fsm.isInState(StateEnum.S1);
-        fsm.isInState(StateEnum.S11);
+        // state machine is configured with initial state
+        // initial state is a sub state of parent
+        // state machine is not started yet
+        Assert.assertTrue(fsm.isInState(StateEnum.S1));
+        Assert.assertTrue(fsm.isInState(StateEnum.S11));
 
+        // state machine handles transition
         fsm.fire(EventEnum.EVENT11);
 
+        // transition is performed
+        // initial state entry actions are not called
+        // destination state entry actions are called
+        Assert.assertFalse(entryS1Action.actionExecuted());
+        Assert.assertFalse(entryS11Action.actionExecuted());
+        Assert.assertTrue(entryS12Action.actionExecuted());
+
+    }
+
+    @Test
+    public void initialStateTransition(){
+        // state machine is configured with initial state
+        // initial state is a sub state of parent
+        // state machine is not started yet
+        Assert.assertTrue(fsm.isInState(StateEnum.S1));
+        Assert.assertTrue(fsm.isInState(StateEnum.S11));
+
+        // initial transition is fired
+        fsm.fireInitialTransition();
+
+        // state machine enters super state
+        // state machine enters inner state (initial)
+        Assert.assertTrue(entryS1Action.actionExecuted());
+        Assert.assertTrue(entryS11Action.actionExecuted());
+        Assert.assertFalse(entryS12Action.actionExecuted());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void initialStateTransitionCanBeTriggeredOnlyOnce() {
+        // state machine is configured with initial state
+        // initial state is a sub state of parent
+        // state machine initial transition has been called
+        Assert.assertTrue(fsm.isInState(StateEnum.S1));
+        Assert.assertTrue(fsm.isInState(StateEnum.S11));
+
+        // initial transition is fired
+        fsm.fireInitialTransition();
+
+        // initial transition is fired 2nd time
+        fsm.fireInitialTransition();
+
+        // exception is thrown
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void initialStateTransitionCanBeTriggeredBeforeAnyTrigger() {
+        // state machine is configured with initial state
+        // initial state is a sub state of parent
+        // state machine normal transition has been performed
+        Assert.assertTrue(fsm.isInState(StateEnum.S1));
+        Assert.assertTrue(fsm.isInState(StateEnum.S11));
+
+        // state machine handles transition
+        fsm.fire(EventEnum.EVENT11);
+        Assert.assertTrue(fsm.isInState(StateEnum.S12));
+
+        // initial transition is fired after state machine has been started
+        fsm.fireInitialTransition();
+
+        // exception is thrown
     }
 }
 

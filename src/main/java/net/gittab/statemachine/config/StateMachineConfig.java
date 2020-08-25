@@ -15,16 +15,16 @@ public class StateMachineConfig<S, E, C> {
 
     private final Map<S, StateRepresentation<S, E, C>> stateRepresentationMap = new HashMap<>();
 
-    public StateRepresentation<S, E, C> getStateRepresentation(S source){
-        return this.stateRepresentationMap.get(source);
+    public StateRepresentation<S, E, C> getStateRepresentation(S state){
+        return this.stateRepresentationMap.get(state);
     }
 
-    public StateRepresentation<S, E, C> getOrCreateStateRepresentation(S source){
-        return this.stateRepresentationMap.computeIfAbsent(source, StateRepresentation::new);
+    public StateRepresentation<S, E, C> getOrCreateStateRepresentation(S state){
+        return this.stateRepresentationMap.computeIfAbsent(state, StateRepresentation::new);
     }
 
-    public StateMachineConfigure<S, E, C> configure(S source){
-        return new StateMachineConfigure<>(getOrCreateStateRepresentation(source), this::getOrCreateStateRepresentation);
+    public StateMachineConfigure<S, E, C> configure(S state){
+        return new StateMachineConfigure<>(getOrCreateStateRepresentation(state), this::getOrCreateStateRepresentation);
     }
 
 }

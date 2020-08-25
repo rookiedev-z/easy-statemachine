@@ -1,7 +1,6 @@
 package net.gittab.statemachine;
 
-import static org.junit.Assert.assertEquals;
-
+import net.gittab.statemachine.config.StateMachineBuilder;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.OrderEvent;
 import net.gittab.statemachine.enums.OrderState;
@@ -9,6 +8,8 @@ import net.gittab.statemachine.model.OrderContext;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * SimpleTest.
@@ -26,6 +27,10 @@ public class SimpleTest {
     }
 
     <S, E> void simpleTest(S source, S destination, E event){
+        StateMachineBuilder.Builder<S, E, String> builder =  StateMachineBuilder.builder();
+//        builder.configure(source).permit();
+        StateMachine<S, E, String> stateMachine1 = builder.newStateMachine(source);
+
         StateMachineConfig<S, E, Void> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(source)
                 .permit(event, destination, (transition, context) ->{
