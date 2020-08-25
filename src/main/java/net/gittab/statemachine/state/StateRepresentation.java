@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * StateRepresentation.
@@ -27,7 +28,7 @@ public class StateRepresentation<S, E, C> {
 
     private final List<StateRepresentation<S, E, C>> subStates = new ArrayList<>();
 
-    public final Map<E, TransitionBehaviour<S, E, Transition<S, E>, C>> transitionBehaviourMap = new HashMap<>();
+    public final Map<E, List<TransitionBehaviour<S, E, Transition<S, E>, C>>> transitionBehaviourListMap = new HashMap<>();
 
     public final List<Action<S, E, Transition<S, E>, C>> entryAction = new ArrayList<>();
 
@@ -37,9 +38,42 @@ public class StateRepresentation<S, E, C> {
         this.state = state;
     }
 
-    public TransitionBehaviour<S, E, Transition<S, E>, C> tryFindTransitionBehaviour(E event){
-        return this.transitionBehaviourMap.get(event);
+    public TransitionBehaviour<S, E, Transition<S, E>, C> tryFindTransitionBehaviour(E event, C context){
+        TransitionBehaviour<S, E, Transition<S, E>, C> result = tryFindLocalTransitionBehaviour(event, context);
+        if (result == null && this.superState != null) {
+            result = this.superState.tryFindTransitionBehaviour(event, context);
+        }
+        return result;
     }
+
+    TransitionBehaviour<S, E, Transition<S, E>, C> tryFindLocalTransitionBehaviour(E event, C context){
+        List<TransitionBehaviour<S, E, Transition<S, E>, C>> transitionBehaviours = this.transitionBehaviourListMap.get(event);
+        if(transitionBehaviours == null || transitionBehaviours.size() == 0){
+            return null;
+        }
+
+        if(transitionBehaviours.size() == 2){
+            TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour1 = transitionBehaviours.get(0);
+            TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour2 = transitionBehaviours.get(1);
+            boolean guardResult1 = transitionBehaviour1.isGuardMet(context);
+            boolean guardResult2 = transitionBehaviour2.isGuardMet(context);
+            if(guardResult1 == guardResult2){
+                throw new IllegalStateException("Multiple permitted action are configured from state '" + state + "' for event '" + event + "'. Guard clauses must be mutually exclusive.");
+            }
+            if(guardResult1){
+                return transitionBehaviour1;
+            }else{
+                return transitionBehaviour2;
+            }
+        }
+
+        if(transitionBehaviours.size() > 1){
+            throw new IllegalStateException("Multiple permitted action are configured from state '" + state + "' for event '" + event + "'. Guard clauses must be mutually exclusive.");
+        }
+
+        return transitionBehaviours.get(0);
+    }
+
 
     public void entry(Transition<S, E> transition, C context){
         if (transition.isReentry()) {
@@ -74,7 +108,10 @@ public class StateRepresentation<S, E, C> {
 
     public void addEventBehaviour(TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour){
         assert transitionBehaviour != null : BEHAVIOUR_IS_NULL;
-        this.transitionBehaviourMap.put(transitionBehaviour.getTransition().getEvent(), transitionBehaviour);
+        E event = transitionBehaviour.getTransition().getEvent();
+        List<TransitionBehaviour<S, E, Transition<S, E>, C>> transitionBehaviours =
+                this.transitionBehaviourListMap.computeIfAbsent(event, key -> new ArrayList<>());
+        transitionBehaviours.add(transitionBehaviour);
     }
 
     public void addEntryAction(Action<S, E, Transition<S, E>, C> action){
@@ -109,12 +146,16 @@ public class StateRepresentation<S, E, C> {
         return this.state.equals(stateToCheck);
     }
 
-    public TransitionBehaviour<S, E, Transition<S, E>, C> getTransitionBehaviour(E event){
-        return this.transitionBehaviourMap.get(event);
+    public boolean isIncludedIn(S stateToCheck) {
+        return this.state.equals(stateToCheck) || (this.superState != null && this.superState.isIncludedIn(stateToCheck));
     }
 
-    public Map<E, TransitionBehaviour<S, E, Transition<S, E>, C>> getTransitionBehaviourMap(){
-        return this.transitionBehaviourMap;
+    public List<TransitionBehaviour<S, E, Transition<S, E>, C>> getTransitionBehaviour(E event){
+        return this.transitionBehaviourListMap.get(event);
+    }
+
+    public Map<E, List<TransitionBehaviour<S, E, Transition<S, E>, C>>> getTransitionBehaviourMap(){
+        return this.transitionBehaviourListMap;
     }
 
     public void setSuperstate(StateRepresentation<S, E, C> superState) {

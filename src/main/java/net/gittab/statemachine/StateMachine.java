@@ -30,10 +30,6 @@ public class StateMachine<S, E, C> {
         );
     };
 
-    public StateMachine(S initialState) {
-        this(initialState, new StateMachineConfig<>());
-    }
-
     public StateMachine(S initialState, StateMachineConfig<S, E, C> config) {
         this.initialState = initialState;
         this.config = config;
@@ -87,21 +83,20 @@ public class StateMachine<S, E, C> {
 
         isStarted = true;
 
-        TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour = getCurrentRepresentation().tryFindTransitionBehaviour(event);
+        TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour = getCurrentRepresentation().tryFindTransitionBehaviour(event, context);
         if (transitionBehaviour == null) {
             this.unknownEventAction.execute(getUnknownTransition(getState(), event), context);
             return;
         }
         Transition<S, E> transition = transitionBehaviour.getTransition();
         if (transitionBehaviour.isInternal()) {
-            transitionBehaviour.action(transition, context);
+            transitionBehaviour.action(context);
         } else {
-            S destination = transitionBehaviour.transition(transition, context);
-            getCurrentRepresentation().entry(transition, context);
-            transitionBehaviour.action(transition, context);
-            setState(destination);
+            S destination = transitionBehaviour.transition(context);
             getCurrentRepresentation().exit(transition, context);
-
+            transitionBehaviour.action(context);
+            setState(destination);
+            getCurrentRepresentation().entry(transition, context);
         }
     }
 
@@ -112,6 +107,10 @@ public class StateMachine<S, E, C> {
                 return null;
             }
         };
+    }
+
+    public boolean isInState(S state) {
+        return getCurrentRepresentation().isIncludedIn(state);
     }
 
     public S getState() {

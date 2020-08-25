@@ -1,12 +1,12 @@
-package net.gittab.statemachine;
+package net.gittab.statemachine.enums;
 
 /**
- * EventEnum.
+ * OrderEvent.
  *
  * @author rookiedev
  * @date 2020/8/24 15:03
  **/
-public enum EventEnum {
+public enum OrderEvent {
 
     PAY_SUCCESS,
 

@@ -1,6 +1,6 @@
 package net.gittab.statemachine.model;
 
-import net.gittab.statemachine.StateEnum;
+import net.gittab.statemachine.enums.OrderState;
 
 /**
  * OrderContext.
@@ -12,7 +12,7 @@ public class OrderContext {
 
     private Long id;
 
-    private StateEnum status;
+    private OrderState status;
 
     private Long amount;
 
@@ -24,11 +24,11 @@ public class OrderContext {
         this.id = id;
     }
 
-    public StateEnum getStatus() {
+    public OrderState getStatus() {
         return status;
     }
 
-    public void setStatus(StateEnum status) {
+    public void setStatus(OrderState status) {
         this.status = status;
     }
 

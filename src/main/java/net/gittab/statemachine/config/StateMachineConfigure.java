@@ -48,9 +48,29 @@ public class StateMachineConfigure<S, E, C> {
         return publicPermitIf(event, destination, guard);
     }
 
+    public StateMachineConfigure<S, E, C> permitIfElseThrow(E event, S destination, Guard<S, E, Transition<S, E>, C> guard){
+        enforceNotIdentityTransition(destination);
+        Action<S, E, Transition<S, E>, C> throwAction = (transition, context) -> {
+            throw new IllegalStateException(
+                    String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
+            );
+        };
+        return publicPermitIfElse(event, destination, guard, null, throwAction);
+    }
+
     public StateMachineConfigure<S, E, C> permitIf(E event, S destination, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
         enforceNotIdentityTransition(destination);
         return publicPermitIf(event, destination, guard, action);
+    }
+
+    public StateMachineConfigure<S, E, C> permitIfElseThrow(E event, S destination, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
+        enforceNotIdentityTransition(destination);
+        Action<S, E, Transition<S, E>, C> throwAction = (transition, context) -> {
+            throw new IllegalStateException(
+                    String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
+            );
+        };
+        return publicPermitIfElse(event, destination, guard, action, throwAction);
     }
 
     public StateMachineConfigure<S, E, C> permitIfElse(E event, S destination, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> ifAction, Action<S, E, Transition<S, E>, C> elseAction){
@@ -66,6 +86,15 @@ public class StateMachineConfigure<S, E, C> {
         return publicPermitInternalIf(event, guard, action);
     }
 
+    public StateMachineConfigure<S, E, C> permitInternalIfElseThrow(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
+        Action<S, E, Transition<S, E>, C> throwAction = (transition, context) -> {
+            throw new IllegalStateException(
+                    String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
+            );
+        };
+        return publicPermitInternalIfElse(event, guard, action, throwAction);
+    }
+
     public StateMachineConfigure<S, E, C> permitInternalIfElse(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> ifAction, Action<S, E, Transition<S, E>, C> elseAction){
         return publicPermitInternalIfElse(event, guard, ifAction, elseAction);
     }
@@ -76,6 +105,15 @@ public class StateMachineConfigure<S, E, C> {
 
     public StateMachineConfigure<S, E, C> permitReentryIf(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
         return publicPermitIf(event, this.stateRepresentation.getState(), guard, action);
+    }
+
+    public StateMachineConfigure<S, E, C> permitReentryIfElseThrow(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
+        Action<S, E, Transition<S, E>, C> throwAction = (transition, context) -> {
+            throw new IllegalStateException(
+                    String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
+            );
+        };
+        return publicPermitIfElse(event, this.stateRepresentation.getState(), guard, action, throwAction);
     }
 
     public StateMachineConfigure<S, E, C> permitReentryIfElse(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> ifAction, Action<S, E, Transition<S, E>, C> elseAction){

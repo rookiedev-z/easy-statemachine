@@ -20,9 +20,9 @@ public abstract class TransitionBehaviour<S, E, T extends Transition<S, E>, C> {
 
     public abstract boolean isInternal();
 
-    public abstract boolean isGuardMet(T transition, C context);
+    public abstract boolean isGuardMet(C context);
 
-    public abstract void action(T transition, C context);
+    public abstract void action(C context);
 
-    public abstract S transition(T transition, C context);
+    public abstract S transition(C context);
 }

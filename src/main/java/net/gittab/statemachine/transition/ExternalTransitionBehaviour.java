@@ -32,28 +32,28 @@ public class ExternalTransitionBehaviour<S, E, T extends Transition<S, E>, C> ex
     }
 
     @Override
-    public boolean isGuardMet(T transition, C context) {
+    public boolean isGuardMet(C context) {
         if(this.guard == null){
             return true;
         }
-        return this.guard.evaluate(transition, context);
+        return this.guard.evaluate(this.getTransition(), context);
     }
 
     @Override
-    public void action(T transition, C context) {
+    public void action(C context) {
         if(this.ifAction == null){
             return;
         }
-        if(isGuardMet(transition, context)){
-            this.ifAction.execute(transition, context);
+        if(isGuardMet(context)){
+            this.ifAction.execute(this.getTransition(), context);
         }else if(this.elseAction != null){
-            this.elseAction.execute(transition, context);
+            this.elseAction.execute(this.getTransition(), context);
         }
     }
 
     @Override
-    public S transition(T transition, C context) {
-        if(isGuardMet(transition, context)){
+    public S transition(C context) {
+        if(isGuardMet(context)){
             return this.getTransition().transition();
         }
         return this.getTransition().getSource();
