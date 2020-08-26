@@ -6,9 +6,10 @@ import net.gittab.statemachine.transition.TransitionBehaviour;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Set;
 
 /**
  * StateRepresentation.
@@ -72,6 +73,11 @@ public class StateRepresentation<S, E, C> {
         }
 
         return transitionBehaviours.get(0);
+    }
+
+    public Boolean canFire(E event, C context) {
+        TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour = tryFindTransitionBehaviour(event, context);
+        return transitionBehaviour != null && transitionBehaviour.isGuardMet(context);
     }
 
 
@@ -150,6 +156,23 @@ public class StateRepresentation<S, E, C> {
         return this.state.equals(stateToCheck) || (this.superState != null && this.superState.isIncludedIn(stateToCheck));
     }
 
+    public List<E> getPermittedEvents(C context) {
+        Set<E> result = new HashSet<>();
+        for (E event : transitionBehaviourListMap.keySet()) {
+            for (TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour : transitionBehaviourListMap.get(event)) {
+                if (transitionBehaviour.isGuardMet(context)) {
+                    result.add(event);
+                    break;
+                }
+            }
+        }
+
+        if (getSuperState() != null) {
+            result.addAll(getSuperState().getPermittedEvents(context));
+        }
+        return new ArrayList<>(result);
+    }
+
     public List<TransitionBehaviour<S, E, Transition<S, E>, C>> getTransitionBehaviour(E event){
         return this.transitionBehaviourListMap.get(event);
     }
@@ -160,6 +183,10 @@ public class StateRepresentation<S, E, C> {
 
     public void setSuperstate(StateRepresentation<S, E, C> superState) {
         this.superState = superState;
+    }
+
+    public StateRepresentation<S, E, C> getSuperState() {
+        return this.superState;
     }
 
     public void addSubState(StateRepresentation<S, E, C> subState) {

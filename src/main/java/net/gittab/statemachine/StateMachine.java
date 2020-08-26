@@ -7,6 +7,7 @@ import net.gittab.statemachine.state.StateRepresentation;
 import net.gittab.statemachine.transition.Transition;
 import net.gittab.statemachine.transition.TransitionBehaviour;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -24,7 +25,7 @@ public class StateMachine<S, E, C> {
     private boolean isStarted = false;
     private S initialState;
 
-    protected Action<S, E, Transition<S, E>, C> unknownEventAction = (transition, context) -> {
+    private Action<S, E, Transition<S, E>, C> unknownEventAction = (transition, context) -> {
         throw new IllegalStateException(
                 String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
         );
@@ -71,6 +72,10 @@ public class StateMachine<S, E, C> {
         return representation == null ? new StateRepresentation<>(getState()) : representation;
     }
 
+    public List<E> getPermittedEvents(C context) {
+        return getCurrentRepresentation().getPermittedEvents(context);
+    }
+
     public void fire(E event) {
         fire(event, null);
     }
@@ -93,11 +98,21 @@ public class StateMachine<S, E, C> {
             transitionBehaviour.action(context);
         } else {
             S destination = transitionBehaviour.transition(context);
+            if(destination == null){
+                return;
+            }
             getCurrentRepresentation().exit(transition, context);
             transitionBehaviour.action(context);
             setState(destination);
             getCurrentRepresentation().entry(transition, context);
         }
+    }
+
+    public void unknownEventAction(Action<S, E, Transition<S, E>, C> unknownEventAction) {
+        if (unknownEventAction == null) {
+            throw new IllegalStateException("unknown event action");
+        }
+        this.unknownEventAction = unknownEventAction;
     }
 
     private Transition<S, E> getUnknownTransition(S source, E event){

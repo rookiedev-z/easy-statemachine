@@ -33,17 +33,11 @@ public class InternalTransitionBehaviour<S, E, T extends Transition<S, E>, C> ex
 
     @Override
     public boolean isGuardMet(C context) {
-        if(this.guard == null){
-            return true;
-        }
         return this.guard.evaluate(this.getTransition(), context);
     }
 
     @Override
     public void action(C context) {
-        if(this.ifAction == null){
-            return;
-        }
         if(isGuardMet(context)){
             this.ifAction.execute(this.getTransition(), context);
         }else if(this.elseAction != null){
@@ -53,6 +47,10 @@ public class InternalTransitionBehaviour<S, E, T extends Transition<S, E>, C> ex
 
     @Override
     public S transition(C context) {
-        return this.getTransition().transition();
+        if(isGuardMet(context)){
+            return this.getTransition().transition();
+        }
+        return null;
     }
+
 }

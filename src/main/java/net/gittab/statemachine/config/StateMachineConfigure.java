@@ -5,6 +5,7 @@ import net.gittab.statemachine.guard.Guard;
 import net.gittab.statemachine.state.StateRepresentation;
 import net.gittab.statemachine.transition.*;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -15,9 +16,19 @@ import java.util.function.Function;
  **/
 public class StateMachineConfigure<S, E, C> {
 
+    public static final String GUARD_IS_NULL = "guard is null";
+
     public static final String ACTION_IS_NULL = "action is null";
 
-    public static final String GUARD_IS_NULL = "guard is null";
+    public static final String IF_ACTION_IS_NULL = "if action is null";
+
+    public static final String ELSE_ACTION_IS_NULL = "else action is null";
+
+    private static final String ENTRY_ACTION_IS_NULL = "entry action is null";
+
+    private static final String EXIT_ACTION_IS_NULL = "exit action is null";
+
+    private static final String EVENT_IS_NULL = "trigger is null";
 
     public final Guard<S, E, Transition<S, E>, C> DEFAULT_GUARD = (transition, context) -> true;
 
@@ -55,7 +66,7 @@ public class StateMachineConfigure<S, E, C> {
                     String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
             );
         };
-        return publicPermitIfElse(event, destination, guard, null, throwAction);
+        return publicPermitIfElse(event, destination, guard, this.DEFAULT_ACTION, throwAction);
     }
 
     public StateMachineConfigure<S, E, C> permitIf(E event, S destination, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
@@ -121,56 +132,80 @@ public class StateMachineConfigure<S, E, C> {
     }
 
     StateMachineConfigure<S, E, C> publicPermitInternal(E event, Action<S, E, Transition<S, E>, C> action){
-        return publicPermitInternalIf(event, null, action);
+        return publicPermitInternalIf(event, this.DEFAULT_GUARD, action);
     }
 
     StateMachineConfigure<S, E, C> publicPermitInternalIf(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
+        assert guard != null : GUARD_IS_NULL;
+        assert action != null : ACTION_IS_NULL;
         Transition<S, E> transition = new InternalTransition<>(this.stateRepresentation.getState(), event);
         this.stateRepresentation.addEventBehaviour(new InternalTransitionBehaviour<>(transition, guard, action));
         return this;
     }
 
     StateMachineConfigure<S, E, C> publicPermitInternalIfElse(E event, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> ifAction, Action<S, E, Transition<S, E>, C> elseAction){
+        assert guard != null : GUARD_IS_NULL;
+        assert ifAction != null : IF_ACTION_IS_NULL;
+        assert elseAction != null : ELSE_ACTION_IS_NULL;
         Transition<S, E> transition = new InternalTransition<>(this.stateRepresentation.getState(), event);
         this.stateRepresentation.addEventBehaviour(new InternalTransitionBehaviour<>(transition, guard, ifAction, elseAction));
         return this;
     }
 
     StateMachineConfigure<S, E, C> publicPermit(E event, S destination){
-        return publicPermitIf(event, destination, null, null);
+        return publicPermitIf(event, destination, this.DEFAULT_GUARD, this.DEFAULT_ACTION);
     }
 
     StateMachineConfigure<S, E, C> publicPermit(E event, S destination, final Action<S, E, Transition<S, E>, C> action){
-        return publicPermitIf(event, destination, null, action);
+        return publicPermitIf(event, destination, this.DEFAULT_GUARD, action);
     }
 
     StateMachineConfigure<S, E, C> publicPermitIf(E event, S destination, Guard<S, E, Transition<S, E>, C> guard){
-        return publicPermitIf(event, destination, guard, null);
+        return publicPermitIf(event, destination, guard, this.DEFAULT_ACTION);
     }
 
     StateMachineConfigure<S, E, C> publicPermitIf(E event, S destination, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> action){
+        assert guard != null : GUARD_IS_NULL;
+        assert action != null : ACTION_IS_NULL;
         Transition<S, E> transition = new ExternalTransition<>(this.stateRepresentation.getState(), destination, event);
         this.stateRepresentation.addEventBehaviour(new ExternalTransitionBehaviour<>(transition, guard, action));
         return this;
     }
 
     StateMachineConfigure<S, E, C> publicPermitIfElse(E event, S destination, Guard<S, E, Transition<S, E>, C> guard, Action<S, E, Transition<S, E>, C> ifAction, Action<S, E, Transition<S, E>, C> elseAction){
+        assert guard != null : GUARD_IS_NULL;
+        assert ifAction != null : IF_ACTION_IS_NULL;
+        assert elseAction != null : ELSE_ACTION_IS_NULL;
         Transition<S, E> transition = new ExternalTransition<>(this.stateRepresentation.getState(), destination, event);
         this.stateRepresentation.addEventBehaviour(new ExternalTransitionBehaviour<>(transition, guard, ifAction, elseAction));
         return this;
     }
 
+//    public StateMachineConfigure<S, E, C> ignore(E event){
+//        return ignoreIf(event, this.DEFAULT_GUARD);
+//    }
+//
+//    public StateMachineConfigure<S, E, C> ignoreIf(E event, Guard<S, E, Transition<S, E>, C> guard){
+//        Transition<S, E> transition = new InternalTransition<>(this.stateRepresentation.getState(), event);
+//        this.stateRepresentation.addEventBehaviour(new InternalTransitionBehaviour<>(transition, guard, this.DEFAULT_ACTION));
+//        return this;
+//    }
+
     public StateMachineConfigure<S, E, C> onEntry(Action<S, E, Transition<S, E>, C> action){
+        assert action != null : ENTRY_ACTION_IS_NULL;
         this.stateRepresentation.addEntryAction(action);
         return this;
     }
 
     public StateMachineConfigure<S, E, C> onEntryFrom(E event, Action<S, E, Transition<S, E>, C> action){
+        assert event != null : EVENT_IS_NULL;
+        assert action != null : ENTRY_ACTION_IS_NULL;
         this.stateRepresentation.addEntryActionFrom(event, action);
         return this;
     }
 
     public StateMachineConfigure<S, E, C> onExit(Action<S, E, Transition<S, E>, C> action){
+        assert action != null : EXIT_ACTION_IS_NULL;
         this.stateRepresentation.addExitAction(action);
         return this;
     }
@@ -183,7 +218,7 @@ public class StateMachineConfigure<S, E, C> {
     }
 
     void enforceNotIdentityTransition(S destination) {
-        if (destination.equals(this.stateRepresentation.getState())) {
+        if (Objects.equals(destination, this.stateRepresentation.getState())) {
             throw new IllegalStateException("Permit() (and PermitIf()) require that the destination state is not equal to the source state. To accept a trigger without changing state, use either ignore(), permitInternal() or permitReentry().");
         }
     }
