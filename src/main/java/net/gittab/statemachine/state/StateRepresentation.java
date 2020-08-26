@@ -1,15 +1,10 @@
 package net.gittab.statemachine.state;
 
 import net.gittab.statemachine.action.Action;
-import net.gittab.statemachine.transition.Transition;
-import net.gittab.statemachine.transition.TransitionBehaviour;
+import net.gittab.statemachine.transition.AbstractTransition;
+import net.gittab.statemachine.transition.TransitionData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * StateRepresentation.
@@ -21,7 +16,7 @@ public class StateRepresentation<S, E, C> {
 
     private static final String ACTION_IS_NULL = "action is null";
 
-    private static final String BEHAVIOUR_IS_NULL = "behaviour is null";
+    private static final String TRANSITION_IS_NULL = "transition is null";
 
     public final S state;
 
@@ -29,116 +24,113 @@ public class StateRepresentation<S, E, C> {
 
     private final List<StateRepresentation<S, E, C>> subStates = new ArrayList<>();
 
-    public final Map<E, List<TransitionBehaviour<S, E, Transition<S, E>, C>>> transitionBehaviourListMap = new HashMap<>();
+    public final Map<E, List<AbstractTransition<S, E, C>>> transitionListMap = new HashMap<>();
 
-    public final List<Action<S, E, Transition<S, E>, C>> entryAction = new ArrayList<>();
+    public final List<Action<S, E, C>> entryAction = new ArrayList<>();
 
-    public final List<Action<S, E, Transition<S, E>, C>> exitAction = new ArrayList<>();
+    public final List<Action<S, E, C>> exitAction = new ArrayList<>();
 
     public StateRepresentation(S state){
         this.state = state;
     }
 
-    public TransitionBehaviour<S, E, Transition<S, E>, C> tryFindTransitionBehaviour(E event, C context){
-        TransitionBehaviour<S, E, Transition<S, E>, C> result = tryFindLocalTransitionBehaviour(event, context);
+    public AbstractTransition<S, E, C> tryFindTransition(E event, C context){
+        AbstractTransition<S, E, C> result = tryFindLocalTransition(event, context);
         if (result == null && this.superState != null) {
-            result = this.superState.tryFindTransitionBehaviour(event, context);
+            result = this.superState.tryFindTransition(event, context);
         }
         return result;
     }
 
-    TransitionBehaviour<S, E, Transition<S, E>, C> tryFindLocalTransitionBehaviour(E event, C context){
-        List<TransitionBehaviour<S, E, Transition<S, E>, C>> transitionBehaviours = this.transitionBehaviourListMap.get(event);
-        if(transitionBehaviours == null || transitionBehaviours.size() == 0){
+    AbstractTransition<S, E, C> tryFindLocalTransition(E event, C context){
+        List<AbstractTransition<S, E, C>> transitions = this.transitionListMap.get(event);
+        if(transitions == null || transitions.size() == 0){
             return null;
         }
 
-        if(transitionBehaviours.size() == 2){
-            TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour1 = transitionBehaviours.get(0);
-            TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour2 = transitionBehaviours.get(1);
-            boolean guardResult1 = transitionBehaviour1.isGuardMet(context);
-            boolean guardResult2 = transitionBehaviour2.isGuardMet(context);
+        if(transitions.size() == 2){
+            AbstractTransition<S, E, C> transition1 = transitions.get(0);
+            AbstractTransition<S, E, C> transition2 = transitions.get(1);
+            boolean guardResult1 = transition1.isGuardMet(context);
+            boolean guardResult2 = transition2.isGuardMet(context);
             if(guardResult1 == guardResult2){
                 throw new IllegalStateException("Multiple permitted action are configured from state '" + state + "' for event '" + event + "'. Guard clauses must be mutually exclusive.");
             }
             if(guardResult1){
-                return transitionBehaviour1;
+                return transition1;
             }else{
-                return transitionBehaviour2;
+                return transition2;
             }
         }
 
-        if(transitionBehaviours.size() > 1){
+        if(transitions.size() > 1){
             throw new IllegalStateException("Multiple permitted action are configured from state '" + state + "' for event '" + event + "'. Guard clauses must be mutually exclusive.");
         }
 
-        return transitionBehaviours.get(0);
+        return transitions.get(0);
     }
 
     public Boolean canFire(E event, C context) {
-        TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour = tryFindTransitionBehaviour(event, context);
-        return transitionBehaviour != null && transitionBehaviour.isGuardMet(context);
+        AbstractTransition<S, E, C> transition = tryFindTransition(event, context);
+        return transition != null && transition.isGuardMet(context);
     }
 
 
-    public void entry(Transition<S, E> transition, C context){
-        if (transition.isReentry()) {
-            executeEntryActions(transition, context);
-        } else if (!includes(transition.getSource())) {
+    public void entry(TransitionData<S, E> transitionData, C context){
+        if (transitionData.isReentry()) {
+            executeEntryActions(transitionData, context);
+        } else if (!includes(transitionData.getSource())) {
             if (this.superState != null) {
-                this.superState.entry(transition, context);
+                this.superState.entry(transitionData, context);
             }
-            executeEntryActions(transition, context);
+            executeEntryActions(transitionData, context);
         }
     }
 
-    void executeEntryActions(Transition<S, E> transition, C context){
-        this.entryAction.forEach(action -> action.execute(transition, context));
+    void executeEntryActions(TransitionData<S, E> transitionData, C context){
+        this.entryAction.forEach(action -> action.execute(transitionData, context));
     }
 
-    public void exit(Transition<S, E> transition, C context){
-        if (transition.isReentry()) {
-            executeExitActions(transition, context);
-        } else if (!includes(transition.getDestination())) {
-            executeExitActions(transition, context);
+    public void exit(TransitionData<S, E> transitionData, C context){
+        if (transitionData.isReentry()) {
+            executeExitActions(transitionData, context);
+        } else if (!includes(transitionData.getDestination())) {
+            executeExitActions(transitionData, context);
             if (this.superState != null) {
-                this.superState.exit(transition, context);
+                this.superState.exit(transitionData, context);
             }
         }
 
     }
 
-    void executeExitActions(Transition<S, E> transition, C context){
-        this.exitAction.forEach(action -> action.execute(transition, context));
+    void executeExitActions(TransitionData<S, E> transitionData, C context){
+        this.exitAction.forEach(action -> action.execute(transitionData, context));
     }
 
-    public void addEventBehaviour(TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour){
-        assert transitionBehaviour != null : BEHAVIOUR_IS_NULL;
-        E event = transitionBehaviour.getTransition().getEvent();
-        List<TransitionBehaviour<S, E, Transition<S, E>, C>> transitionBehaviours =
-                this.transitionBehaviourListMap.computeIfAbsent(event, key -> new ArrayList<>());
-        transitionBehaviours.add(transitionBehaviour);
+    public void addEventTransition(AbstractTransition<S, E, C> transition){
+        assert transition != null : TRANSITION_IS_NULL;
+        E event = transition.getTransitionData().getEvent();
+        List<AbstractTransition<S, E, C>> transitions =
+                this.transitionListMap.computeIfAbsent(event, key -> new ArrayList<>());
+        transitions.add(transition);
     }
 
-    public void addEntryAction(Action<S, E, Transition<S, E>, C> action){
+    public void addEntryAction(Action<S, E, C> action){
         assert action != null : ACTION_IS_NULL;
         this.entryAction.add(action);
     }
 
-    public void addEntryActionFrom(E event, Action<S, E, Transition<S, E>, C> action){
+    public void addEntryActionFrom(E event, Action<S, E, C> action){
         assert action != null : ACTION_IS_NULL;
-        this.entryAction.add(new Action<S, E, Transition<S, E>, C>() {
-            @Override
-            public void execute(Transition<S, E> transition, C context) {
-                E transitionEvent = transition.getEvent();
-                if(transitionEvent != null && transitionEvent.equals(event)){
-                    action.execute(transition, context);
-                }
+        this.entryAction.add((transition, context) -> {
+            E transitionEvent = transition.getEvent();
+            if(transitionEvent != null && transitionEvent.equals(event)){
+                action.execute(transition, context);
             }
         });
     }
 
-    public void addExitAction(Action<S, E, Transition<S, E>, C> action){
+    public void addExitAction(Action<S, E, C> action){
         assert action != null : ACTION_IS_NULL;
         this.exitAction.add(action);
     }
@@ -158,9 +150,9 @@ public class StateRepresentation<S, E, C> {
 
     public List<E> getPermittedEvents(C context) {
         Set<E> result = new HashSet<>();
-        for (E event : transitionBehaviourListMap.keySet()) {
-            for (TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour : transitionBehaviourListMap.get(event)) {
-                if (transitionBehaviour.isGuardMet(context)) {
+        for (E event : transitionListMap.keySet()) {
+            for (AbstractTransition<S, E, C> transition : transitionListMap.get(event)) {
+                if (transition.isGuardMet(context)) {
                     result.add(event);
                     break;
                 }
@@ -173,12 +165,12 @@ public class StateRepresentation<S, E, C> {
         return new ArrayList<>(result);
     }
 
-    public List<TransitionBehaviour<S, E, Transition<S, E>, C>> getTransitionBehaviour(E event){
-        return this.transitionBehaviourListMap.get(event);
+    public List<AbstractTransition<S, E, C>> getTransition(E event){
+        return this.transitionListMap.get(event);
     }
 
-    public Map<E, List<TransitionBehaviour<S, E, Transition<S, E>, C>>> getTransitionBehaviourMap(){
-        return this.transitionBehaviourListMap;
+    public Map<E, List<AbstractTransition<S, E, C>>> getTransitionMap(){
+        return this.transitionListMap;
     }
 
     public void setSuperstate(StateRepresentation<S, E, C> superState) {

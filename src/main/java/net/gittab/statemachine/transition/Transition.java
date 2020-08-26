@@ -4,38 +4,16 @@ package net.gittab.statemachine.transition;
  * Transition.
  *
  * @author rookiedev
- * @date 2020/8/24 21:23
+ * @date 2020/8/26 22:39
  **/
-public abstract class Transition<S, E> {
+public interface Transition<S, C> {
 
-    private final S source;
+    boolean isInternal();
 
-    private final S destination;
+    boolean isGuardMet(C context);
 
-    private final E event;
+    void action(C context);
 
-    public Transition(S source, S destination, E event){
-        this.source = source;
-        this.destination = destination;
-        this.event = event;
-    }
-
-    public S getSource(){
-        return this.source;
-    }
-
-    public S getDestination(){
-        return this.destination;
-    }
-
-    public E getEvent(){
-        return this.event;
-    }
-
-    public boolean isReentry(){
-        return getSource() != null && getSource().equals(getDestination());
-    }
-
-    public abstract S transition();
+    S transition(C context);
 
 }

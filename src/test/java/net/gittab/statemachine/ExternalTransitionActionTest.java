@@ -1,18 +1,16 @@
 package net.gittab.statemachine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.gittab.statemachine.action.Action;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.EventEnum;
 import net.gittab.statemachine.enums.StateEnum;
-import net.gittab.statemachine.transition.Transition;
+import net.gittab.statemachine.transition.TransitionData;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * ExternalTransitionActionTest.
@@ -22,7 +20,7 @@ import org.junit.Test;
  **/
 public class ExternalTransitionActionTest {
 
-    static class StatusAction<S, E, T extends Transition<S, E>, C> implements Action<S, E, T, C> {
+    static class StatusAction<S, E, C> implements Action<S, E, C> {
 
         private boolean status;
 
@@ -35,12 +33,12 @@ public class ExternalTransitionActionTest {
         }
 
         @Override
-        public void execute(T transition, C context) {
+        public void execute(TransitionData<S, E> transitionData, C context) {
             this.status = true;
         }
     }
 
-    static class CountAction<S, E, T extends Transition<S, E>, C> implements Action<S, E, T, C> {
+    static class CountAction<S, E, C> implements Action<S, E, C> {
 
         private List<Integer> orders;
 
@@ -52,14 +50,14 @@ public class ExternalTransitionActionTest {
         }
 
         @Override
-        public void execute(T transition, C context) {
+        public void execute(TransitionData<S, E> transitionData, C context) {
             this.orders.add(this.order);
         }
     }
 
     @Test
     public void noGuardedActionIsPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permit(EventEnum.X, StateEnum.B, action);
@@ -75,9 +73,9 @@ public class ExternalTransitionActionTest {
     @Test
     public void transitionActionIsPerformedBetweenExitAndEntry() {
         List<Integer> orders = new ArrayList<>();
-        Action<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> exitAction = new CountAction<>(orders, 1);
-        Action<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new CountAction<>(orders, 2);
-        Action<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryAction = new CountAction<>(orders, 3);
+        Action<StateEnum, EventEnum, String> exitAction = new CountAction<>(orders, 1);
+        Action<StateEnum, EventEnum, String> action = new CountAction<>(orders, 2);
+        Action<StateEnum, EventEnum, String> entryAction = new CountAction<>(orders, 3);
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).onExit(exitAction).permit(EventEnum.X, StateEnum.B, action);
@@ -94,7 +92,7 @@ public class ExternalTransitionActionTest {
 
     @Test
     public void stateAndActionWithPositiveGuardIsPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> true, action);
@@ -107,7 +105,7 @@ public class ExternalTransitionActionTest {
 
     @Test
     public void stateAndActionWithNegativeGuardIsNotPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> false, action);
@@ -120,7 +118,7 @@ public class ExternalTransitionActionTest {
 
     @Test(expected = IllegalStateException.class)
     public void actionWithNegativeGuardIsThrow() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitIfElseThrow(EventEnum.X, StateEnum.B, (transition, context) -> false, action);
@@ -133,8 +131,8 @@ public class ExternalTransitionActionTest {
 
     @Test
     public void actionWithPositiveGuardIsPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> positiveAction = new StatusAction<>();
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> negativeAction = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> positiveAction = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> negativeAction = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A)
@@ -150,7 +148,7 @@ public class ExternalTransitionActionTest {
 
     @Test
     public void noGuardedActionIsPerformedOnReentry() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A)
                 .permitReentry(EventEnum.X, action);
@@ -164,9 +162,9 @@ public class ExternalTransitionActionTest {
     @Test
     public void reentryActionIsPerformedBetweenExitAndEntry() {
         List<Integer> orders = new ArrayList<>();
-        Action<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> exitAction = new CountAction<>(orders, 1);
-        Action<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new CountAction<>(orders, 2);
-        Action<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryAction = new CountAction<>(orders, 3);
+        Action<StateEnum, EventEnum, String> exitAction = new CountAction<>(orders, 1);
+        Action<StateEnum, EventEnum, String> action = new CountAction<>(orders, 2);
+        Action<StateEnum, EventEnum, String> entryAction = new CountAction<>(orders, 3);
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).onEntry(entryAction).onExit(exitAction).permitReentry(EventEnum.X, action);
@@ -184,7 +182,7 @@ public class ExternalTransitionActionTest {
 
     @Test
     public void actionWithPositiveGuardIsPerformedOnReentry() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitReentryIf(EventEnum.X, (transition, context) -> true, action);
@@ -197,7 +195,7 @@ public class ExternalTransitionActionTest {
 
     @Test
     public void actionWithNegativeGuardIsNotPerformedOnReentry() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitReentryIf(EventEnum.X, (transition, context) -> false, action);
@@ -210,8 +208,8 @@ public class ExternalTransitionActionTest {
 
     @Test(expected = IllegalStateException.class)
     public void multipleActionsWithSameTriggerNotAllowed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action1 = new StatusAction<>();
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action2 = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action1 = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action2 = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permit(EventEnum.X, StateEnum.B, action1).permit(EventEnum.X, StateEnum.B, action2);

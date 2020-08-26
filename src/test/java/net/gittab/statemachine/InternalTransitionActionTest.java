@@ -1,15 +1,13 @@
 package net.gittab.statemachine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import net.gittab.statemachine.action.Action;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.EventEnum;
 import net.gittab.statemachine.enums.StateEnum;
-import net.gittab.statemachine.transition.Transition;
+import net.gittab.statemachine.transition.TransitionData;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * InternalTransitionActionTest.
@@ -20,7 +18,7 @@ import org.junit.Test;
 public class InternalTransitionActionTest {
 
 
-    static class StatusAction<S, E, T extends Transition<S, E>, C> implements Action<S, E, T, C> {
+    static class StatusAction<S, E, C> implements Action<S, E, C> {
 
         private boolean status;
 
@@ -33,14 +31,14 @@ public class InternalTransitionActionTest {
         }
 
         @Override
-        public void execute(T transition, C context) {
+        public void execute(TransitionData<S, E> transitionData, C context) {
             this.status = true;
         }
     }
 
     @Test
     public void unguardedActionIsPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitInternal(EventEnum.X, action);
@@ -53,9 +51,9 @@ public class InternalTransitionActionTest {
 
     @Test
     public void exitAndEntryAreNotPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryAction = new StatusAction<>();
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> exitAction = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> entryAction = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> exitAction = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).onEntry(entryAction).onExit(exitAction).permitInternal(EventEnum.X, action);
@@ -70,7 +68,7 @@ public class InternalTransitionActionTest {
 
     @Test
     public void actionWithPositiveGuardIsPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitInternalIf(EventEnum.X, (transition, context) -> true, action);
@@ -83,7 +81,7 @@ public class InternalTransitionActionTest {
 
     @Test
     public void actionWithNegativeGuardIsNotPerformed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitInternalIf(EventEnum.X, (transition, context) -> false, action);
@@ -96,7 +94,7 @@ public class InternalTransitionActionTest {
 
     @Test(expected = IllegalStateException.class)
     public void actionWithNegativeGuardIsThrow() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitInternalIfElseThrow(EventEnum.X, (transition, context) -> false, action);
@@ -111,8 +109,8 @@ public class InternalTransitionActionTest {
 
     @Test(expected = IllegalStateException.class)
     public void multipleInternalActionsWithSameTriggerNotAllowed() {
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action1 = new StatusAction<>();
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action2 = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action1 = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action2 = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitInternal(EventEnum.X, action1).permitInternal(EventEnum.X, action2);
@@ -125,8 +123,8 @@ public class InternalTransitionActionTest {
     @Test
     public void multipleInternalActionsWithDistinctTriggersAreAllowed() {
 
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action1 = new StatusAction<>();
-        StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> action2 = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action1 = new StatusAction<>();
+        StatusAction<StateEnum, EventEnum, String> action2 = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(StateEnum.A).permitInternal(EventEnum.X, action1).permitInternal(EventEnum.Y, action2);

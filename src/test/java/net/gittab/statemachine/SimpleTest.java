@@ -1,6 +1,6 @@
 package net.gittab.statemachine;
 
-import net.gittab.statemachine.config.StateMachineBuilder;
+import net.gittab.statemachine.builder.StateMachineBuilder;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.OrderEvent;
 import net.gittab.statemachine.enums.OrderState;
@@ -28,9 +28,6 @@ public class SimpleTest {
 
     <S, E> void simpleTest(S source, S destination, E event){
         StateMachineBuilder.Builder<S, E, String> builder =  StateMachineBuilder.builder();
-//        builder.configure(source).permit();
-        StateMachine<S, E, String> stateMachine1 = builder.newStateMachine(source);
-
         StateMachineConfig<S, E, Void> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(source)
                 .permit(event, destination, (transition, context) ->{
@@ -42,7 +39,7 @@ public class SimpleTest {
     }
 
     @Test
-    public void externalTransitionTest(){
+    public void stateMachineTest(){
         StateMachineConfig<OrderState, OrderEvent, OrderContext> stateMachineConfig = new StateMachineConfig<>();
         stateMachineConfig.configure(OrderState.TO_PAY)
                 .permit(OrderEvent.PAY_SUCCESS, OrderState.PAID,
@@ -51,19 +48,7 @@ public class SimpleTest {
                         (transition, context) -> SimpleTest.this.logger.info(transition.getSource().name() + " -> " + transition.getDestination().name() +  " on " + transition.getEvent().name() +  " event with " + context));
         StateMachine<OrderState, OrderEvent, OrderContext> stateMachine = new StateMachine<>(OrderState.TO_PAY, stateMachineConfig);
         stateMachine.fire(OrderEvent.PAY_SUCCESS);
-        assert OrderState.PAID.equals(stateMachine.getState());
+        assertEquals(OrderState.PAID, stateMachine.getState());
     }
 
-    @Test
-    public void internalTransitionTest(){
-        StateMachineConfig<OrderState, OrderEvent, OrderContext> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(OrderState.TO_PAY)
-                .permit(OrderEvent.PAY_SUCCESS, OrderState.PAID,
-                        (transition, context) -> SimpleTest.this.logger.info(transition.getSource().name() + " -> " + transition.getDestination().name() +  " on " + transition.getEvent().name() +  " event with " + context))
-                .permit(OrderEvent.PAY_FAIL, OrderState.PAID_FAILED,
-                        (transition, context) -> SimpleTest.this.logger.info(transition.getSource().name() + " -> " + transition.getDestination().name() +  " on " + transition.getEvent().name() +  " event with " + context));
-        StateMachine<OrderState, OrderEvent, OrderContext> stateMachine = new StateMachine<>(OrderState.TO_PAY, stateMachineConfig);
-        stateMachine.fire(OrderEvent.PAY_SUCCESS);
-        assert OrderState.PAID.equals(stateMachine.getState());
-    }
 }

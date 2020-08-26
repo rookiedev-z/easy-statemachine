@@ -1,6 +1,6 @@
 package net.gittab.statemachine.guard;
 
-import net.gittab.statemachine.transition.Transition;
+import net.gittab.statemachine.transition.TransitionData;
 
 /**
  * Guard.
@@ -9,12 +9,12 @@ import net.gittab.statemachine.transition.Transition;
  * @date 2020/8/21 2:40 下午
  **/
 @FunctionalInterface
-public interface Guard<S, E, T extends Transition<S, E>, C> {
+public interface Guard<S, E, C> {
 
     /**
      * evaluate a guard condition.
      * @return true, if guard evaluation is successful, false otherwise
      */
-    boolean evaluate(T transition, C context);
+    boolean evaluate(TransitionData<S, E> transitionData, C context);
 
 }

@@ -4,8 +4,8 @@ import net.gittab.statemachine.action.Action;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.state.StateReference;
 import net.gittab.statemachine.state.StateRepresentation;
-import net.gittab.statemachine.transition.Transition;
-import net.gittab.statemachine.transition.TransitionBehaviour;
+import net.gittab.statemachine.transition.AbstractTransition;
+import net.gittab.statemachine.transition.TransitionData;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,9 +25,9 @@ public class StateMachine<S, E, C> {
     private boolean isStarted = false;
     private S initialState;
 
-    private Action<S, E, Transition<S, E>, C> unknownEventAction = (transition, context) -> {
+    private Action<S, E, C> unknownEventAction = (transitionData, context) -> {
         throw new IllegalStateException(
-                String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transition.getSource(), transition.getEvent(), context)
+                String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transitionData.getSource(), transitionData.getEvent(), context)
         );
     };
 
@@ -57,13 +57,7 @@ public class StateMachine<S, E, C> {
             throw new IllegalStateException("Firing initial transition after state machine has been started");
         }
         isStarted = true;
-        Transition<S, E> initialTransition = new Transition<S, E>(null, currentState, null) {
-
-            @Override
-            public S transition() {
-                return null;
-            }
-        };
+        TransitionData<S, E> initialTransition = new TransitionData<>(null, currentState, null);
         getCurrentRepresentation().entry(initialTransition, context);
     }
 
@@ -88,40 +82,36 @@ public class StateMachine<S, E, C> {
 
         isStarted = true;
 
-        TransitionBehaviour<S, E, Transition<S, E>, C> transitionBehaviour = getCurrentRepresentation().tryFindTransitionBehaviour(event, context);
-        if (transitionBehaviour == null) {
+        AbstractTransition<S, E, C> transition = getCurrentRepresentation().tryFindTransition(event, context);
+        if (transition == null) {
             this.unknownEventAction.execute(getUnknownTransition(getState(), event), context);
             return;
         }
-        Transition<S, E> transition = transitionBehaviour.getTransition();
-        if (transitionBehaviour.isInternal()) {
-            transitionBehaviour.action(context);
+        if (transition.isInternal()) {
+            transition.action(context);
         } else {
-            S destination = transitionBehaviour.transition(context);
-            if(destination == null){
-                return;
-            }
-            getCurrentRepresentation().exit(transition, context);
-            transitionBehaviour.action(context);
+
+            S destination = transition.transition(context);
+//            if(destination == null){
+//                return;
+//            }
+            TransitionData<S, E> transitionData = transition.getTransitionData();
+            getCurrentRepresentation().exit(transitionData, context);
+            transition.action(context);
             setState(destination);
-            getCurrentRepresentation().entry(transition, context);
+            getCurrentRepresentation().entry(transitionData, context);
         }
     }
 
-    public void unknownEventAction(Action<S, E, Transition<S, E>, C> unknownEventAction) {
+    public void unknownEventAction(Action<S, E, C> unknownEventAction) {
         if (unknownEventAction == null) {
             throw new IllegalStateException("unknown event action");
         }
         this.unknownEventAction = unknownEventAction;
     }
 
-    private Transition<S, E> getUnknownTransition(S source, E event){
-        return new Transition<S, E>(source, null, event) {
-            @Override
-            public S transition() {
-                return null;
-            }
-        };
+    private TransitionData<S, E> getUnknownTransition(S source, E event){
+        return new TransitionData<>(source, null, event);
     }
 
     public boolean isInState(S state) {

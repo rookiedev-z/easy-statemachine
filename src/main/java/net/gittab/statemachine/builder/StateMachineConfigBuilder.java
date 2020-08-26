@@ -1,4 +1,6 @@
-package net.gittab.statemachine.config;
+package net.gittab.statemachine.builder;
+
+import net.gittab.statemachine.config.StateMachineConfig;
 
 /**
  * StateMachineConfigBuilder.

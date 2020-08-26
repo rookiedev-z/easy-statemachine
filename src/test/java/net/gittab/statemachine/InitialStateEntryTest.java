@@ -4,7 +4,7 @@ import net.gittab.statemachine.action.Action;
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.EventEnum;
 import net.gittab.statemachine.enums.StateEnum;
-import net.gittab.statemachine.transition.Transition;
+import net.gittab.statemachine.transition.TransitionData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,13 +19,13 @@ public class InitialStateEntryTest {
 
     private StateMachine<StateEnum, EventEnum, String> fsm;
 
-    private StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryS1Action;
+    private StatusAction<StateEnum, EventEnum, String> entryS1Action;
 
-    private StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryS11Action;
+    private StatusAction<StateEnum, EventEnum, String> entryS11Action;
 
-    private StatusAction<StateEnum, EventEnum, Transition<StateEnum, EventEnum>, String> entryS12Action;
+    private StatusAction<StateEnum, EventEnum, String> entryS12Action;
 
-    static class StatusAction<S, E, T extends Transition<S, E>, C> implements Action<S, E, T, C> {
+    static class StatusAction<S, E, C> implements Action<S, E, C> {
 
         private boolean status;
 
@@ -38,7 +38,7 @@ public class InitialStateEntryTest {
         }
 
         @Override
-        public void execute(T transition, C context) {
+        public void execute(TransitionData<S, E> transitionData, C context) {
             this.status = true;
         }
     }

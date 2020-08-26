@@ -1,19 +1,27 @@
 package net.gittab.statemachine.transition;
 
+import net.gittab.statemachine.action.Action;
+import net.gittab.statemachine.guard.Guard;
+
 /**
  * ExternalTransition.
  *
  * @author rookiedev
- * @date 2020/8/24 22:09
+ * @date 2020/8/24 15:22
  **/
-public class ExternalTransition<S, E> extends Transition<S, E>{
+public class ExternalTransition<S, E, C> extends AbstractTransition<S, E, C> {
 
-    public ExternalTransition(S source, S destination, E event) {
-        super(source, destination, event);
+    public ExternalTransition(TransitionData<S, E> transitionData, Guard<S, E, C> guard, Action<S, E, C> ifAction) {
+        super(transitionData, guard, ifAction);
+    }
+
+    public ExternalTransition(TransitionData<S, E> transitionData, Guard<S, E, C> guard, Action<S, E, C> ifAction, Action<S, E, C> elseAction) {
+        super(transitionData, guard, ifAction, elseAction);
     }
 
     @Override
-    public S transition() {
-        return this.getDestination();
+    public boolean isInternal() {
+        return false;
     }
+
 }

@@ -1,16 +1,14 @@
 package net.gittab.statemachine;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-
 import net.gittab.statemachine.enums.EventEnum;
 import net.gittab.statemachine.enums.StateEnum;
 import net.gittab.statemachine.state.StateRepresentation;
-import net.gittab.statemachine.transition.InternalTransitionBehaviour;
-import net.gittab.statemachine.transition.Transition;
+import net.gittab.statemachine.transition.InternalTransition;
+import net.gittab.statemachine.transition.TransitionData;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 /**
  * StateRepresentationTest.
@@ -20,7 +18,7 @@ import org.junit.Test;
  **/
 public class StateRepresentationTest {
 
-    private Transition<StateEnum, EventEnum> actualTransition = null;
+    private TransitionData<StateEnum, EventEnum> actualTransition = null;
 
     private boolean executed = false;
 
@@ -31,12 +29,8 @@ public class StateRepresentationTest {
     @Test
     public void uponEntering_EntryActionExecuted(){
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.B);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X);
+
         actualTransition = null;
         stateRepresentation.addEntryAction((tran, context) -> {
            actualTransition = tran;
@@ -48,12 +42,7 @@ public class StateRepresentationTest {
     @Test
     public void uponLeaving_EnteringActionsNotExecuted() {
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.B);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X);
         actualTransition = null;
         stateRepresentation.addEntryAction((tran, context) -> {
             actualTransition = tran;
@@ -65,12 +54,7 @@ public class StateRepresentationTest {
     @Test
     public void uponLeaving_LeavingActionsExecuted() {
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.A);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X);
         actualTransition = null;
         stateRepresentation.addExitAction((tran, context) -> {
             actualTransition = tran;
@@ -82,12 +66,7 @@ public class StateRepresentationTest {
     @Test
     public void uponEntering_LeavingActionsNotExecuted() {
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.A);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.A, StateEnum.B, EventEnum.X);
         actualTransition = null;
         stateRepresentation.addExitAction((tran, context) -> {
             actualTransition = tran;
@@ -158,12 +137,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(superStateRepresentation.getState(), subStateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(superStateRepresentation.getState(), subStateRepresentation.getState(), EventEnum.X);
         executed = false;
         subStateRepresentation.addEntryAction((tran, context) -> {
             executed = true;
@@ -180,12 +154,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(superStateRepresentation.getState(), subStateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(superStateRepresentation.getState(), subStateRepresentation.getState(), EventEnum.X);
         executed = false;
         superStateRepresentation.addEntryAction((tran, context) -> {
             executed = true;
@@ -202,12 +171,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(superStateRepresentation.getState(), subStateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(superStateRepresentation.getState(), subStateRepresentation.getState(), EventEnum.X);
         executed = false;
         superStateRepresentation.addExitAction((tran, context) -> {
             executed = true;
@@ -224,12 +188,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(subStateRepresentation.getState(), superStateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(subStateRepresentation.getState(), superStateRepresentation.getState(), EventEnum.X);
         executed = false;
         subStateRepresentation.addExitAction((tran, context) -> {
             executed = true;
@@ -246,12 +205,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.S13, subStateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.S13, subStateRepresentation.getState(), EventEnum.X);
         executed = false;
         superStateRepresentation.addEntryAction((tran, context) -> {
             executed = true;
@@ -268,12 +222,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(subStateRepresentation.getState(), StateEnum.S21, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(subStateRepresentation.getState(), StateEnum.S21, EventEnum.X);
         executed = false;
         superStateRepresentation.addExitAction((tran, context) -> {
             executed = true;
@@ -294,12 +243,7 @@ public class StateRepresentationTest {
         subStateRepresentation.setSuperstate(superStateRepresentation);
         subStateRepresentation2.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(subStateRepresentation.getState(), subStateRepresentation2.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(subStateRepresentation.getState(), subStateRepresentation2.getState(), EventEnum.X);
         executed = false;
         superStateRepresentation.addExitAction((tran, context) -> {
             executed = true;
@@ -312,12 +256,7 @@ public class StateRepresentationTest {
     public void entryActionsExecuteInOrder() {
         final ArrayList<Integer> orders = new ArrayList<>();
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.B);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.A, stateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.A, stateRepresentation.getState(), EventEnum.X);
         stateRepresentation.addEntryAction((tran, context) -> {
             orders.add(0);
         });
@@ -335,12 +274,7 @@ public class StateRepresentationTest {
     public void exitActionsExecuteInOrder() {
         final ArrayList<Integer> orders = new ArrayList<>();
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.A);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(stateRepresentation.getState(), StateEnum.B, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(stateRepresentation.getState(), StateEnum.B, EventEnum.X);
         stateRepresentation.addExitAction((tran, context) -> {
             orders.add(0);
         });
@@ -363,26 +297,16 @@ public class StateRepresentationTest {
     @Test
     public void whenTransitionGuardConditionNotMet_EventCannotFired() {
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.A);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(stateRepresentation.getState(), stateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
-        stateRepresentation.addEventBehaviour(new InternalTransitionBehaviour<>(transition, (tran1, context1) -> false, (tran2, context2) ->{}));
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(stateRepresentation.getState(), stateRepresentation.getState(), EventEnum.X);
+        stateRepresentation.addEventTransition(new InternalTransition<>(transition, (tran1, context1) -> false, (tran2, context2) ->{}));
         Assert.assertFalse(stateRepresentation.canFire(EventEnum.X, "state machine context"));
     }
 
     @Test
     public void whenTransitionGuardConditionMet_EventCanFired() {
         StateRepresentation<StateEnum, EventEnum, String> stateRepresentation = new StateRepresentation<>(StateEnum.A);
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(stateRepresentation.getState(), stateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
-        stateRepresentation.addEventBehaviour(new InternalTransitionBehaviour<>(transition, (tran1, context1) -> true, (tran2, context2) ->{}));
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(stateRepresentation.getState(), stateRepresentation.getState(), EventEnum.X);
+        stateRepresentation.addEventTransition(new InternalTransition<>(transition, (tran1, context1) -> true, (tran2, context2) ->{}));
         Assert.assertTrue(stateRepresentation.canFire(EventEnum.X, "state machine context"));
     }
 
@@ -394,14 +318,9 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(subStateRepresentation.getState(), StateEnum.S21, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(subStateRepresentation.getState(), StateEnum.S21, EventEnum.X);
 
-        superStateRepresentation.addEventBehaviour(new InternalTransitionBehaviour<>(transition, (tran1, context1) -> true, (tran2, context2) ->{}));
+        superStateRepresentation.addEventTransition(new InternalTransition<>(transition, (tran1, context1) -> true, (tran2, context2) ->{}));
         Assert.assertTrue(subStateRepresentation.canFire(EventEnum.X, "state machine context"));
     }
 
@@ -413,12 +332,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(StateEnum.S13, subStateRepresentation.getState(), EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(StateEnum.S13, subStateRepresentation.getState(), EventEnum.X);
 
         order = 0;
         subOrder = 0;
@@ -443,12 +357,7 @@ public class StateRepresentationTest {
         superStateRepresentation.addSubState(subStateRepresentation);
         subStateRepresentation.setSuperstate(superStateRepresentation);
 
-        Transition<StateEnum, EventEnum> transition = new Transition<StateEnum, EventEnum>(subStateRepresentation.getState(), StateEnum.S21, EventEnum.X) {
-            @Override
-            public StateEnum transition() {
-                return null;
-            }
-        };
+        TransitionData<StateEnum, EventEnum> transition = new TransitionData<StateEnum, EventEnum>(subStateRepresentation.getState(), StateEnum.S21, EventEnum.X);
 
         order = 0;
         subOrder = 0;

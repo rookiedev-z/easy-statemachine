@@ -1,5 +1,6 @@
 package net.gittab.statemachine.config;
 
+import net.gittab.statemachine.configurers.StateMachineConfigure;
 import net.gittab.statemachine.state.StateRepresentation;
 
 import java.util.HashMap;

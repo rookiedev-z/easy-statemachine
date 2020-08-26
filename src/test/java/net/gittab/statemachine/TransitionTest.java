@@ -1,12 +1,10 @@
 package net.gittab.statemachine;
 
-import static org.junit.Assert.assertEquals;
+import net.gittab.statemachine.transition.TransitionData;
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import net.gittab.statemachine.transition.ExternalTransition;
-import net.gittab.statemachine.transition.InternalTransition;
-import org.junit.Test;
 
 /**
  * TransitionTest.
@@ -22,7 +20,7 @@ public class TransitionTest {
     }
 
     <S, E> boolean internalReentryTest(S source, E event){
-        InternalTransition<S, E> internalTransition = new InternalTransition<>(source, event);
+        TransitionData<S, E> internalTransition = new TransitionData<>(source, source, event);
         return internalTransition.isReentry();
     }
 
@@ -32,7 +30,7 @@ public class TransitionTest {
     }
 
     <S, E> boolean externalReentryTest(S source, S destination, E event){
-        ExternalTransition<S, E> externalTransition = new ExternalTransition<>(source, destination, event);
+        TransitionData<S, E> externalTransition = new TransitionData<>(source, destination, event);
         return externalTransition.isReentry();
     }
 }

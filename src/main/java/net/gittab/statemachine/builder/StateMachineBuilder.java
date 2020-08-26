@@ -1,6 +1,8 @@
-package net.gittab.statemachine.config;
+package net.gittab.statemachine.builder;
 
 import net.gittab.statemachine.StateMachine;
+import net.gittab.statemachine.config.StateMachineConfig;
+import net.gittab.statemachine.configurers.StateMachineConfigure;
 
 /**
  * StateMachineBuilder.
@@ -30,9 +32,13 @@ public class StateMachineBuilder {
             return this.stateMachineConfig.configure(state);
         }
 
-        public StateMachine<S, E, C> newStateMachine(S source) {
+        public StateMachineConfigure<S, E, C> and(S state){
+            return this.stateMachineConfig.configure(state);
+        }
+
+        public StateMachine<S, E, C> newStateMachine(S initialState) {
             this.stateMachineConfig = this.builder.config();
-            return new StateMachine<>(source, stateMachineConfig);
+            return new StateMachine<>(initialState, stateMachineConfig);
         }
     }
 
