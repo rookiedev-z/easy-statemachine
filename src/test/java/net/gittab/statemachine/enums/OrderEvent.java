@@ -12,7 +12,9 @@ public enum OrderEvent {
 
     PAY_FAIL,
 
-    REFUND_SUCCESS
+    REFUND_SUCCESS,
+
+    REFUND_FAIL
 
 
 }

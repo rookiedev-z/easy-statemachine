@@ -8,12 +8,19 @@ import net.gittab.statemachine.config.StateMachineConfig;
  * @author rookiedev
  * @date 2020/8/25 22:33
  **/
-public class StateMachineConfigBuilder<S, E, C> {
+public class StateMachineConfigBuilder {
 
-    public StateMachineConfigBuilder() {
+    private StateMachineConfigBuilder(){}
+
+    public static <S, E, C> Builder<S, E, C> builder() {
+        return new Builder<>();
     }
 
-    protected StateMachineConfig<S, E, C> config() {
-        return new StateMachineConfig<>();
+    public static class Builder<S, E, C> {
+
+        public StateMachineConfig<S, E, C> config(){
+            return new StateMachineConfig<>();
+        }
+
     }
 }

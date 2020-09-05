@@ -225,8 +225,4 @@ public class StateMachineConfigure<S, E, C> {
         }
     }
 
-
-
-
-
 }

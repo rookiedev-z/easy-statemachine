@@ -36,6 +36,4 @@ public class TransitionData<S, E> {
         return getSource() != null && getSource().equals(getDestination());
     }
 
-//    public abstract S transition();
-
 }

@@ -1,5 +1,7 @@
 package net.gittab.statemachine.config;
 
+import net.gittab.statemachine.configurers.ExternalTransitionConfigurer;
+import net.gittab.statemachine.configurers.InternalTransitionConfigurer;
 import net.gittab.statemachine.configurers.StateMachineConfigure;
 import net.gittab.statemachine.state.StateRepresentation;
 
@@ -24,8 +26,17 @@ public class StateMachineConfig<S, E, C> {
         return this.stateRepresentationMap.computeIfAbsent(state, StateRepresentation::new);
     }
 
+    @Deprecated
     public StateMachineConfigure<S, E, C> configure(S state){
         return new StateMachineConfigure<>(getOrCreateStateRepresentation(state), this::getOrCreateStateRepresentation);
+    }
+
+    public ExternalTransitionConfigurer<S, E, C> externalConfigure(S state){
+        return new ExternalTransitionConfigurer<>(getOrCreateStateRepresentation(state), this::getOrCreateStateRepresentation);
+    }
+
+    public InternalTransitionConfigurer<S, E, C> internalConfigure(S state){
+        return new InternalTransitionConfigurer<>(getOrCreateStateRepresentation(state), this::getOrCreateStateRepresentation);
     }
 
 }
