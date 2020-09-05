@@ -16,6 +16,8 @@ public abstract class AbstractTransition<S, E, C> implements Transition<S, C>{
     private final Action<S, E, C> ifAction;
     private Action<S, E, C> elseAction;
 
+    protected Boolean isGuardMet = null;
+
     public AbstractTransition(TransitionData<S, E> transitionData, Guard<S, E, C> guard, Action<S, E, C> ifAction) {
         this.transitionData = transitionData;
         this.guard = guard;
@@ -29,12 +31,16 @@ public abstract class AbstractTransition<S, E, C> implements Transition<S, C>{
 
     @Override
     public boolean isGuardMet(C context) {
-        return this.guard.evaluate(this.transitionData, context);
+        this.isGuardMet = this.guard.evaluate(this.transitionData, context);
+        return isGuardMet;
     }
 
     @Override
     public void action(C context) {
-        if(isGuardMet(context)){
+        if(this.isGuardMet == null){
+            isGuardMet(context);
+        }
+        if(this.isGuardMet){
             this.ifAction.execute(this.transitionData, context);
         }else if(this.elseAction != null){
             this.elseAction.execute(this.transitionData, context);
@@ -43,10 +49,17 @@ public abstract class AbstractTransition<S, E, C> implements Transition<S, C>{
 
     @Override
     public S transition(C context) {
-        if(isGuardMet(context)){
+        if(this.isGuardMet == null){
+            isGuardMet(context);
+        }
+        if(this.isGuardMet || this.elseAction != null){
             return this.transitionData.getDestination();
         }
-        return null;
+        return this.transitionData.getSource();
+    }
+
+    public boolean existElseAction(){
+        return this.elseAction != null;
     }
 
     public TransitionData<S, E> getTransitionData(){

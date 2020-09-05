@@ -1,17 +1,15 @@
 package net.gittab.statemachine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-import java.util.logging.Logger;
-
 import net.gittab.statemachine.config.StateMachineConfig;
 import net.gittab.statemachine.enums.EventEnum;
 import net.gittab.statemachine.enums.StateEnum;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
 
 /**
  * StateMachineTest.

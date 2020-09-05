@@ -87,14 +87,16 @@ public class StateMachine<S, E, C> {
             this.unknownEventAction.execute(getUnknownTransition(getState(), event), context);
             return;
         }
+        if(transition.isGuardMet(context) || transition.existElseAction()){
+            execute(transition, context);
+        }
+    }
+
+    private void execute(AbstractTransition<S, E, C> transition, C context){
         if (transition.isInternal()) {
             transition.action(context);
         } else {
-
             S destination = transition.transition(context);
-//            if(destination == null){
-//                return;
-//            }
             TransitionData<S, E> transitionData = transition.getTransitionData();
             getCurrentRepresentation().exit(transitionData, context);
             transition.action(context);
