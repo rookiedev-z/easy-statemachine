@@ -2,7 +2,6 @@ package net.gittab.statemachine.config;
 
 import net.gittab.statemachine.configurers.ExternalTransitionConfigurer;
 import net.gittab.statemachine.configurers.InternalTransitionConfigurer;
-import net.gittab.statemachine.configurers.StateMachineConfigure;
 import net.gittab.statemachine.state.StateRepresentation;
 
 import java.util.HashMap;
@@ -39,10 +38,10 @@ public class StateMachineConfig<S, E, C> {
     }
 
 
-    @Deprecated
-    public StateMachineConfigure<S, E, C> configure(S state){
-        return new StateMachineConfigure<>(getOrCreateStateRepresentation(state), this::getOrCreateStateRepresentation);
-    }
+//    @Deprecated
+//    public StateMachineConfigure<S, E, C> configure(S state){
+//        return new StateMachineConfigure<>(getOrCreateStateRepresentation(state), this::getOrCreateStateRepresentation);
+//    }
 
     /**
      * begin configuration of the entry/exit actions and allowed transitions

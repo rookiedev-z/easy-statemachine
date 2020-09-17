@@ -60,7 +60,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permit(EventEnum.X, StateEnum.B, action);
+        stateMachineConfig.externalConfigure(StateEnum.A).permit(EventEnum.X, StateEnum.B, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -78,8 +78,8 @@ public class ExternalTransitionActionTest {
         Action<StateEnum, EventEnum, String> entryAction = new CountAction<>(orders, 3);
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).onExit(exitAction).permit(EventEnum.X, StateEnum.B, action);
-        stateMachineConfig.configure(StateEnum.B).onEntry(entryAction);
+        stateMachineConfig.externalConfigure(StateEnum.A).onExit(exitAction).permit(EventEnum.X, StateEnum.B, action);
+        stateMachineConfig.externalConfigure(StateEnum.B).onEntry(entryAction);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -95,7 +95,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> true, action);
+        stateMachineConfig.externalConfigure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> true, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -108,7 +108,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> false, action);
+        stateMachineConfig.externalConfigure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> false, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -121,7 +121,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitIfElseThrow(EventEnum.X, StateEnum.B, (transition, context) -> false, action);
+        stateMachineConfig.externalConfigure(StateEnum.A).permitIfElseThrow(EventEnum.X, StateEnum.B, (transition, context) -> false, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -135,7 +135,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> negativeAction = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A)
+        stateMachineConfig.externalConfigure(StateEnum.A)
                 .permitIf(EventEnum.X, StateEnum.B, (transition, context) -> true, positiveAction)
                 .permitIf(EventEnum.X, StateEnum.C, (transition, context) -> false, negativeAction);
 
@@ -150,7 +150,7 @@ public class ExternalTransitionActionTest {
     public void noGuardedActionIsPerformedOnReentry() {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A)
+        stateMachineConfig.externalConfigure(StateEnum.A)
                 .permitReentry(EventEnum.X, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
@@ -167,8 +167,8 @@ public class ExternalTransitionActionTest {
         Action<StateEnum, EventEnum, String> entryAction = new CountAction<>(orders, 3);
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).onEntry(entryAction).onExit(exitAction).permitReentry(EventEnum.X, action);
-        // stateMachineConfig.configure(StateEnum.B).onEntry(entryAction);
+        stateMachineConfig.externalConfigure(StateEnum.A).onEntry(entryAction).onExit(exitAction).permitReentry(EventEnum.X, action);
+        // stateMachineConfig.externalConfigure(StateEnum.B).onEntry(entryAction);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -185,7 +185,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitReentryIf(EventEnum.X, (transition, context) -> true, action);
+        stateMachineConfig.externalConfigure(StateEnum.A).permitReentryIf(EventEnum.X, (transition, context) -> true, action);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
 
@@ -198,7 +198,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitReentryIf(EventEnum.X, (transition, context) -> false, action);
+        stateMachineConfig.externalConfigure(StateEnum.A).permitReentryIf(EventEnum.X, (transition, context) -> false, action);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
 
@@ -212,7 +212,7 @@ public class ExternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action2 = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permit(EventEnum.X, StateEnum.B, action1).permit(EventEnum.X, StateEnum.B, action2);
+        stateMachineConfig.externalConfigure(StateEnum.A).permit(EventEnum.X, StateEnum.B, action1).permit(EventEnum.X, StateEnum.B, action2);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);

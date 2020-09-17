@@ -34,8 +34,8 @@ public class StateMachineTest {
     public void subStateIsIncludedInCurrentState() {
 
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.S1);
-        config.configure(StateEnum.S11).subStateOf(StateEnum.S1);
+        config.internalConfigure(StateEnum.S1);
+        config.internalConfigure(StateEnum.S11).subStateOf(StateEnum.S1);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.S11, config);
         Assert.assertEquals(StateEnum.S11, stateMachine.getState());
         Assert.assertTrue(stateMachine.isInState(StateEnum.S1));
@@ -55,9 +55,9 @@ public class StateMachineTest {
     @Test
     public void permittedEventIncludeSuperstatePermittedEvent() {
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.S1).permit(EventEnum.EVENT21, StateEnum.S21);
-        config.configure(StateEnum.S21).subStateOf(StateEnum.S2).permit(EventEnum.EVENT2, StateEnum.S1);
-        config.configure(StateEnum.S2).permit(EventEnum.EVENT1, StateEnum.S1);
+        config.externalConfigure(StateEnum.S1).permit(EventEnum.EVENT21, StateEnum.S21);
+        config.externalConfigure(StateEnum.S21).subStateOf(StateEnum.S2).permit(EventEnum.EVENT2, StateEnum.S1);
+        config.externalConfigure(StateEnum.S2).permit(EventEnum.EVENT1, StateEnum.S1);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.S21, config);
         List<EventEnum> permittedEvent = stateMachine.getPermittedEvents("");
 
@@ -69,8 +69,8 @@ public class StateMachineTest {
     @Test
     public void permittedEventAreDistinctValue() {
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.S21).subStateOf(StateEnum.S2).permit(EventEnum.EVENT1, StateEnum.S1);
-        config.configure(StateEnum.S2).permit(EventEnum.EVENT1, StateEnum.S21);
+        config.externalConfigure(StateEnum.S21).subStateOf(StateEnum.S2).permit(EventEnum.EVENT1, StateEnum.S1);
+        config.externalConfigure(StateEnum.S2).permit(EventEnum.EVENT1, StateEnum.S21);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.S21, config);
         List<EventEnum> permittedEvent = stateMachine.getPermittedEvents("");
 
@@ -81,7 +81,7 @@ public class StateMachineTest {
     @Test
     public void acceptedEventDependingOnGuard() {
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> false);
+        config.externalConfigure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> false);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, config);
 
         List<EventEnum> permittedEvent = stateMachine.getPermittedEvents("");
@@ -91,8 +91,8 @@ public class StateMachineTest {
     @Test
     public void choosesPermittedTransitionByGuard() {
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> true);
-        config.configure(StateEnum.A).permitIf(EventEnum.X, StateEnum.C, (transition, context) -> false);
+        config.externalConfigure(StateEnum.A).permitIf(EventEnum.X, StateEnum.B, (transition, context) -> true);
+        config.externalConfigure(StateEnum.A).permitIf(EventEnum.X, StateEnum.C, (transition, context) -> false);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, config);
         stateMachine.fire(EventEnum.X);
 
@@ -116,7 +116,7 @@ public class StateMachineTest {
     @Test
     public void ifReentryEvent_EntryActionExecuted() {
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.A).permitReentry(EventEnum.X, (transition, context) -> logger.info(transition.toString() + context))
+        config.externalConfigure(StateEnum.A).permitReentry(EventEnum.X, (transition, context) -> logger.info(transition.toString() + context))
                 .onEntry((transition, context) -> fired = true);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, config);
         fired = false;
@@ -127,7 +127,7 @@ public class StateMachineTest {
     @Test(expected = IllegalStateException.class)
     public void implicitReentryIsDisallowed() {
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.A).permit(EventEnum.X, StateEnum.A);
+        config.externalConfigure(StateEnum.A).permit(EventEnum.X, StateEnum.A);
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, config);
     }
 }

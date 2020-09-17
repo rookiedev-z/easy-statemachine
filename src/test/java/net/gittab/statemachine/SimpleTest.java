@@ -29,7 +29,7 @@ public class SimpleTest {
     <S, E> void simpleTest(S source, S destination, E event){
         StateMachineBuilder.Builder<S, E, String> builder =  StateMachineBuilder.builder();
         StateMachineConfig<S, E, Void> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(source)
+        stateMachineConfig.externalConfigure(source)
                 .permit(event, destination, (transition, context) ->{
                     logger.info(transition.getSource() + " -> " + transition.getDestination() +  " on " + transition.getEvent() +  " event with " + context);
                 });
@@ -41,7 +41,7 @@ public class SimpleTest {
     @Test
     public void stateMachineTest(){
         StateMachineConfig<OrderState, OrderEvent, OrderContext> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(OrderState.TO_PAY)
+        stateMachineConfig.externalConfigure(OrderState.TO_PAY)
                 .permit(OrderEvent.PAY_SUCCESS, OrderState.PAID,
                         (transition, context) -> SimpleTest.this.logger.info(transition.getSource().name() + " -> " + transition.getDestination().name() +  " on " + transition.getEvent().name() +  " event with " + context))
                 .permit(OrderEvent.PAY_FAIL, OrderState.PAID_FAILED,

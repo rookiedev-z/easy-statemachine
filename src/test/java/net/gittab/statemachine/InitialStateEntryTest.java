@@ -49,10 +49,10 @@ public class InitialStateEntryTest {
         entryS11Action = new StatusAction<>();
         entryS12Action = new StatusAction<>();
         StateMachineConfig<StateEnum, EventEnum, String> config = new StateMachineConfig<>();
-        config.configure(StateEnum.S1).onEntry(entryS1Action);
-        config.configure(StateEnum.S11).subStateOf(StateEnum.S1).onEntry(entryS11Action)
+        config.externalConfigure(StateEnum.S1).onEntry(entryS1Action);
+        config.externalConfigure(StateEnum.S11).subStateOf(StateEnum.S1).onEntry(entryS11Action)
         .permit(EventEnum.EVENT11, StateEnum.S12);
-        config.configure(StateEnum.S12).subStateOf(StateEnum.S1).onEntry(entryS12Action)
+        config.externalConfigure(StateEnum.S12).subStateOf(StateEnum.S1).onEntry(entryS12Action)
                 .permit(EventEnum.EVENT12, StateEnum.S11);
         fsm = new StateMachine<>(StateEnum.S11, config);
     }

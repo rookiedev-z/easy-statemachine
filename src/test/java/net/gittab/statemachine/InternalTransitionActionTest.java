@@ -41,7 +41,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitInternal(EventEnum.X, action);
+        stateMachineConfig.internalConfigure(StateEnum.A).permit(EventEnum.X, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -56,7 +56,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> exitAction = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).onEntry(entryAction).onExit(exitAction).permitInternal(EventEnum.X, action);
+        stateMachineConfig.internalConfigure(StateEnum.A).permit(EventEnum.X, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -71,7 +71,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitInternalIf(EventEnum.X, (transition, context) -> true, action);
+        stateMachineConfig.internalConfigure(StateEnum.A).permitIf(EventEnum.X, (transition, context) -> true, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -84,7 +84,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitInternalIf(EventEnum.X, (transition, context) -> false, action);
+        stateMachineConfig.internalConfigure(StateEnum.A).permitIf(EventEnum.X, (transition, context) -> false, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -97,7 +97,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitInternalIfElseThrow(EventEnum.X, (transition, context) -> false, action);
+        stateMachineConfig.internalConfigure(StateEnum.A).permitIfElseThrow(EventEnum.X, (transition, context) -> false, action);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -113,7 +113,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action2 = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitInternal(EventEnum.X, action1).permitInternal(EventEnum.X, action2);
+        stateMachineConfig.internalConfigure(StateEnum.A).permit(EventEnum.X, action1).permit(EventEnum.X, action2);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
@@ -127,7 +127,7 @@ public class InternalTransitionActionTest {
         StatusAction<StateEnum, EventEnum, String> action2 = new StatusAction<>();
 
         StateMachineConfig<StateEnum, EventEnum, String> stateMachineConfig = new StateMachineConfig<>();
-        stateMachineConfig.configure(StateEnum.A).permitInternal(EventEnum.X, action1).permitInternal(EventEnum.Y, action2);
+        stateMachineConfig.internalConfigure(StateEnum.A).permit(EventEnum.X, action1).permit(EventEnum.Y, action2);
 
         StateMachine<StateEnum, EventEnum, String> stateMachine = new StateMachine<>(StateEnum.A, stateMachineConfig);
         stateMachine.fire(EventEnum.X);
