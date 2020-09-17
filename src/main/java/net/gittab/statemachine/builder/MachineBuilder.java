@@ -5,8 +5,7 @@ import net.gittab.statemachine.configurers.StateMachineTransitionConfigurer;
 /**
  * MachineBuilder.
  *
- * @author rookiedev
- * @date 2020/9/6 00:12
+ * @author rookiedev 2020/9/6 00:12
  **/
 public class MachineBuilder {
 

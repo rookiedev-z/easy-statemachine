@@ -6,8 +6,7 @@ import net.gittab.statemachine.guard.Guard;
 /**
  * InternalTransition.
  *
- * @author rookiedev
- * @date 2020/8/24 22:37
+ * @author rookiedev 2020/8/24 22:37
  **/
 public class InternalTransition<S, E, C> extends AbstractTransition<S, E, C> {
 

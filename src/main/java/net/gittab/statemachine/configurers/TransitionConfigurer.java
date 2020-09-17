@@ -5,8 +5,7 @@ import net.gittab.statemachine.builder.AnnotationConfigurerBuilder;
 /**
  * TransitionConfigurer.
  *
- * @author rookiedev
- * @date 2020/8/26 22:51
+ * @author rookiedev 2020/8/26 22:51
  **/
 public interface TransitionConfigurer<T, S, E, C> extends AnnotationConfigurerBuilder<StateMachineTransitionConfigurer<S, E, C>> {
 

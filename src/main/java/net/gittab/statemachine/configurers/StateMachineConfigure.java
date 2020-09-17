@@ -13,8 +13,7 @@ import java.util.function.Function;
 /**
  * StateMachineConfigure.
  *
- * @author rookiedev
- * @date 2020/8/21 4:01 下午
+ * @author rookiedev 2020/8/21 4:01 下午
  **/
 public class StateMachineConfigure<S, E, C> {
 

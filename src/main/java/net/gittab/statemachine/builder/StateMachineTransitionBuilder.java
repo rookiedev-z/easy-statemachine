@@ -7,8 +7,7 @@ import net.gittab.statemachine.configurers.StateMachineTransitionConfigurer;
 /**
  * StateMachineTransitionBuilder.
  *
- * @author rookiedev
- * @date 2020/8/26 22:54
+ * @author rookiedev 2020/8/26 22:54
  **/
 public class StateMachineTransitionBuilder<S, E, C> implements StateMachineTransitionConfigurer<S, E, C>, AnnotationBuilder<String>{
 

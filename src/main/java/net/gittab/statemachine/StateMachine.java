@@ -14,23 +14,46 @@ import java.util.function.Supplier;
 /**
  * StateMachine.
  *
- * @author rookiedev
- * @date 2020/8/21 11:22 上午
+ * @author rookiedev 2020/8/21 11:22 上午
  **/
 public class StateMachine<S, E, C> {
 
+    /**
+     * state machine config.
+     */
     protected final StateMachineConfig<S, E, C> config;
+    /**
+     * state accessor.
+     */
     protected final Supplier<S> stateAccessor;
+    /**
+     * state mutator.
+     */
     protected final Consumer<S> stateMutator;
+    /**
+     * state machine has it started.
+     */
     private boolean isStarted = false;
+
+    /**
+     * initial state.
+     */
     private S initialState;
 
+    /**
+     * unknown event handling action.
+     */
     private Action<S, E, C> unknownEventAction = (transitionData, context) -> {
         throw new IllegalStateException(
                 String.format("No valid leaving transitions are permitted from state '%s' for event '%s' with '%s'. Consider ignoring the event.", transitionData.getSource(), transitionData.getEvent(), context)
         );
     };
 
+    /**
+     * construct a state machine.
+     * @param initialState initial state
+     * @param config state machine config
+     */
     public StateMachine(S initialState, StateMachineConfig<S, E, C> config) {
         this.initialState = initialState;
         this.config = config;
@@ -47,10 +70,21 @@ public class StateMachine<S, E, C> {
         stateMutator.accept(initialState);
     }
 
+    /**
+     * fire initial transition into the initial state.
+     * all super-states are entered too.
+     * this method can be called only once, before state machine is used.
+     */
     public void fireInitialTransition() {
         fireInitialTransition(null);
     }
 
+    /**
+     * fire initial transition into the initial state with context.
+     * all super-states are entered too.
+     * this method can be called only once, before state machine is used.
+     * @param context transition context
+     */
     public void fireInitialTransition(C context) {
         S currentState = getCurrentRepresentation().getState();
         if (isStarted || !currentState.equals(initialState)) {
@@ -66,14 +100,32 @@ public class StateMachine<S, E, C> {
         return representation == null ? new StateRepresentation<>(getState()) : representation;
     }
 
+    /**
+     * the currently-permissible trigger events.
+     * @param context transition context
+     * @return the currently-permissible trigger events
+     */
     public List<E> getPermittedEvents(C context) {
         return getCurrentRepresentation().getPermittedEvents(context);
     }
 
+    /**
+     * transition from the current state via the specified trigger event.
+     * the target state is determined by the configuration of the current state.
+     * actions associated with leaving the current state and entering the new one will be invoked.
+     * @param event the trigger event to fire
+     */
     public void fire(E event) {
         fire(event, null);
     }
 
+    /**
+     * transition with context from the current state via the specified trigger event.
+     * the target state is determined by the configuration of the current state.
+     * actions associated with leaving the current state and entering the new one will be invoked.
+     * @param event the trigger event to fire
+     * @param context transition context
+     */
     public void fire(E event, C context) {
         publicFire(event, context);
     }

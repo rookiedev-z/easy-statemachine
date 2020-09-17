@@ -6,8 +6,7 @@ import net.gittab.statemachine.guard.Guard;
 /**
  * ExternalTransition.
  *
- * @author rookiedev
- * @date 2020/8/24 15:22
+ * @author rookiedev 2020/8/24 15:22
  **/
 public class ExternalTransition<S, E, C> extends AbstractTransition<S, E, C> {
 

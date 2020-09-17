@@ -11,8 +11,7 @@ import java.util.function.Function;
 /**
  * AbstractTransitionConfigurer.
  *
- * @author rookiedev
- * @date 2020/8/26 23:15
+ * @author rookiedev 2020/8/26 23:15
  **/
 public abstract class AbstractTransitionConfigurer<S, E, C> extends AnnotationConfigurerAdapter<String, StateMachineTransitionConfigurer<S, E, C>, StateMachineTransitionBuilder<S, E, C>> implements TransitionConfigurer<ExternalTransitionConfigurer<S, E, C>, S, E, C>{
 
@@ -30,8 +29,14 @@ public abstract class AbstractTransitionConfigurer<S, E, C> extends AnnotationCo
 
     protected static final String EVENT_IS_NULL = "trigger is null";
 
+    /**
+     * default guard.
+     */
     protected final Guard<S, E, C> DEFAULT_GUARD = (transitionData, context) -> true;
 
+    /**
+     * default action.
+     */
     protected final Action<S, E, C> DEFAULT_ACTION = (transitionData, context) -> {};
 
     protected final StateRepresentation<S, E, C> stateRepresentation;

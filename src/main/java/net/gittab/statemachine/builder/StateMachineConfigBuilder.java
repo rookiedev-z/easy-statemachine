@@ -5,8 +5,7 @@ import net.gittab.statemachine.config.StateMachineConfig;
 /**
  * StateMachineConfigBuilder.
  *
- * @author rookiedev
- * @date 2020/8/25 22:33
+ * @author rookiedev 2020/8/25 22:33
  **/
 public class StateMachineConfigBuilder {
 

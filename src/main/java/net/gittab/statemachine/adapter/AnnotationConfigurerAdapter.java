@@ -6,8 +6,7 @@ import net.gittab.statemachine.configurers.AnnotationConfigurer;
 /**
  * AnnotationConfigurerAdapter.
  *
- * @author rookiedev
- * @date 2020/8/26 23:18
+ * @author rookiedev 2020/8/26 23:18
  **/
 public abstract class AnnotationConfigurerAdapter<O,I,B extends AnnotationBuilder<O>>
         implements AnnotationConfigurer<O,B> {

@@ -6,8 +6,7 @@ import net.gittab.statemachine.guard.Guard;
 /**
  * AbstractTransition.
  *
- * @author rookiedev
- * @date 2020/8/27 00:40
+ * @author rookiedev 2020/8/27 00:40
  **/
 public abstract class AbstractTransition<S, E, C> implements Transition<S, C>{
 
@@ -58,6 +57,10 @@ public abstract class AbstractTransition<S, E, C> implements Transition<S, C>{
         return this.transitionData.getSource();
     }
 
+    /**
+     * dose is exist else action.
+     * @return true, there exist else action, false otherwise
+     */
     public boolean existElseAction(){
         return this.elseAction != null;
     }

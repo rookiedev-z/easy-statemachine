@@ -9,8 +9,7 @@ import java.util.*;
 /**
  * StateRepresentation.
  *
- * @author rookiedev
- * @date 2020/8/21 2:18 下午
+ * @author rookiedev 2020/8/21 2:18 下午
  **/
 public class StateRepresentation<S, E, C> {
 
@@ -18,22 +17,46 @@ public class StateRepresentation<S, E, C> {
 
     private static final String TRANSITION_IS_NULL = "transition is null";
 
+    /**
+     * the current state.
+     */
     public final S state;
 
+    /**
+     * the super state.
+     */
     private StateRepresentation<S, E, C> superState;
 
+    /**
+     * sub state list of current state.
+     */
     private final List<StateRepresentation<S, E, C>> subStates = new ArrayList<>();
 
+    /**
+     * transition list map, key is event, value is transition list.
+     */
     public final Map<E, List<AbstractTransition<S, E, C>>> transitionListMap = new HashMap<>();
 
+    /**
+     * entry action list.
+     */
     public final List<Action<S, E, C>> entryAction = new ArrayList<>();
 
+    /**
+     * exit action list.
+     */
     public final List<Action<S, E, C>> exitAction = new ArrayList<>();
 
     public StateRepresentation(S state){
         this.state = state;
     }
 
+    /**
+     * try find the corresponding transition according to the trigger event.
+     * @param event the trigger event
+     * @param context transition context
+     * @return matched the transition
+     */
     public AbstractTransition<S, E, C> tryFindTransition(E event, C context){
         AbstractTransition<S, E, C> result = tryFindLocalTransition(event, context);
         if (result == null && this.superState != null) {
@@ -70,12 +93,23 @@ public class StateRepresentation<S, E, C> {
         return transitions.get(0);
     }
 
+    /**
+     * can the given trigger event be triggered.
+     * @param event the trigger event
+     * @param context transition context
+     * @return true if the given trigger event can trigger, otherwise false
+     */
     public Boolean canFire(E event, C context) {
         AbstractTransition<S, E, C> transition = tryFindTransition(event, context);
         return transition != null && transition.isGuardMet(context);
     }
 
 
+    /**
+     * execute entry action with transition context.
+     * @param transitionData transition data
+     * @param context transition context
+     */
     public void entry(TransitionData<S, E> transitionData, C context){
         if (transitionData.isReentry()) {
             executeEntryActions(transitionData, context);
@@ -91,6 +125,11 @@ public class StateRepresentation<S, E, C> {
         this.entryAction.forEach(action -> action.execute(transitionData, context));
     }
 
+    /**
+     * execute exit action with transition context.
+     * @param transitionData transition data
+     * @param context transition context
+     */
     public void exit(TransitionData<S, E> transitionData, C context){
         if (transitionData.isReentry()) {
             executeExitActions(transitionData, context);
@@ -107,6 +146,10 @@ public class StateRepresentation<S, E, C> {
         this.exitAction.forEach(action -> action.execute(transitionData, context));
     }
 
+    /**
+     * add transition of event trigger.
+     * @param transition transition
+     */
     public void addEventTransition(AbstractTransition<S, E, C> transition){
         assert transition != null : TRANSITION_IS_NULL;
         E event = transition.getTransitionData().getEvent();

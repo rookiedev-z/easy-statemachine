@@ -3,8 +3,7 @@ package net.gittab.statemachine.transition;
 /**
  * TransitionData.
  *
- * @author rookiedev
- * @date 2020/8/24 21:23
+ * @author rookiedev 2020/8/24 21:23
  **/
 public class TransitionData<S, E> {
 
@@ -32,6 +31,10 @@ public class TransitionData<S, E> {
         return this.event;
     }
 
+    /**
+     * true if the transition is a re-entry.
+     * @return true if the transition is a re-entry
+     */
     public boolean isReentry(){
         return getSource() != null && getSource().equals(getDestination());
     }
