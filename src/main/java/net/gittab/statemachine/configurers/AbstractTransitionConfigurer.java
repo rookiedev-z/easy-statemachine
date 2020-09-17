@@ -1,8 +1,6 @@
 package net.gittab.statemachine.configurers;
 
 import net.gittab.statemachine.action.Action;
-import net.gittab.statemachine.adapter.AnnotationConfigurerAdapter;
-import net.gittab.statemachine.builder.StateMachineTransitionBuilder;
 import net.gittab.statemachine.guard.Guard;
 import net.gittab.statemachine.state.StateRepresentation;
 
@@ -13,7 +11,7 @@ import java.util.function.Function;
  *
  * @author rookiedev 2020/8/26 23:15
  **/
-public abstract class AbstractTransitionConfigurer<S, E, C> extends AnnotationConfigurerAdapter<String, StateMachineTransitionConfigurer<S, E, C>, StateMachineTransitionBuilder<S, E, C>> implements TransitionConfigurer<ExternalTransitionConfigurer<S, E, C>, S, E, C>{
+public abstract class AbstractTransitionConfigurer<S, E, C> implements TransitionConfigurer<S, E, C>{
 
     protected static final String GUARD_IS_NULL = "guard is null";
 

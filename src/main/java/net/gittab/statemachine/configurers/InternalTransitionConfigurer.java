@@ -92,11 +92,6 @@ public class InternalTransitionConfigurer<S, E, C> extends AbstractTransitionCon
         return this;
     }
 
-    @Override
-    public StateMachineTransitionConfigurer<S, E, C> and() {
-        return null;
-    }
-
     InternalTransitionConfigurer<S, E, C> publicPermitInternal(E event, Action<S, E, C> action){
         return publicPermitInternalIf(event, this.DEFAULT_GUARD, action);
     }

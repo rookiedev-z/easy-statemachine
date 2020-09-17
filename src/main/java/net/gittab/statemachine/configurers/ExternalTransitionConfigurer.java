@@ -239,12 +239,6 @@ public class ExternalTransitionConfigurer<S, E, C> extends AbstractTransitionCon
         return this;
     }
 
-    @Override
-    public StateMachineTransitionConfigurer<S, E, C> and() {
-
-        return null;
-    }
-
     ExternalTransitionConfigurer<S, E, C> publicPermit(E event, S destination){
         return publicPermitIf(event, destination, this.DEFAULT_GUARD, this.DEFAULT_ACTION);
     }
