@@ -8,10 +8,23 @@
     <name>easy-statemachine</name>
 
     <description>A simple and easy-to-use state machine</description>
+    <url>https://github.com/rookiedev-z/easy-statemachine</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <developers>
+        <developer>
+            <name>rookiedev</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/rookiedev-z/easy-statemachine</url>
+        <connection>scm:git:https://github.com/rookiedev-z/easy-statemachine.git</connection>
+        <developerConnection>scm:git:https://github.com/rookiedev-z/easy-statemachine.git</developerConnection>
+    </scm>
 
     <licenses>
         <license>
@@ -26,12 +39,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>3.5.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
