@@ -99,7 +99,7 @@ TODO
 
 - 微信: **rookie-dev**
 - 邮箱: **rookiedev.zhou@gmail.com**
-- blog: **[rookiedev](http://www.gittab.net)**
+- 博客: **[rookiedev](http://www.gittab.net)**
 - 微信公众号: **rookiedev**
 
 扫描下方二维码关注我的微信公众号 **rookiedev** 实时查看最新分享的文章和干货
