@@ -87,10 +87,14 @@ TODO
 
 ## More Information
 
-- 接下来我会在微信公众号: rookiedev 上面详细介绍该项目，敬请关注
-- 对于讨论或问题，可以添加我的微信: rookie-dev
+- 接下来我会在微信公众号: **rookiedev** 上面详细介绍该项目，敬请关注
+- 对于讨论或问题，可以添加我的微信: **rookie-dev**
 - 如有任何问题或者要求，请提交 [Issue](https://github.com/rookiedev-z/easy-statemachine/issues)
 
 ## License
 
 [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
+
+## WeChat Public Account
+
+![rookiedev](http://images.rookiezhou.top/qrcode_for_rookiedev_430.jpg)
