@@ -1,7 +1,5 @@
 # easy-statemachine
 
-------
-
 首先声明这个项目是基于 [stateless4j](https://github.com/stateless4j/stateless4j) 项目改造而来，并且出于学习的目的根据个人想法同时参考 [squirrel](https://github.com/hekailiang/squirrel) 来进行优化，于是便有了现在这个项目。
 
 ## Introduction
