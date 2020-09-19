@@ -97,4 +97,6 @@ TODO
 
 ## WeChat Public Account
 
+扫描下面二维码，关注我的微信公众号 rookiedev，实时查看我最新的分享
+
 ![rookiedev](rookiedev.jpg)
