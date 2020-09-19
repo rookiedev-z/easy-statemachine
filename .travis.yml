@@ -1,0 +1,33 @@
+sudo: required
+
+language: java
+
+jdk:
+  - openjdk8
+
+services:
+  - docker
+
+cache:
+  directories:
+    - "$HOME/.m2"
+
+before_install:
+  - chmod +x ./mvnw
+#  - chmod +x ./deploy.sh
+
+install: true
+
+script: "cp .travis.settings.xml $HOME/.m2/settings.xml && ./mvnw clean package -U"
+
+# script: "./mvnw clean package -U"
+
+#deploy:
+#  - provider: script
+#    skip_cleanup: true
+#    script: "bash deploy.sh"
+#    on:
+#      tags: true
+
+
+
