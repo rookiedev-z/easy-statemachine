@@ -95,8 +95,12 @@ TODO
 
 [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-## WeChat Public Account
+## Social
 
+- 微信: **rookie-dev**
+- 邮箱: **rookiedev.zhou@gmail.com**
+- blog: **[rookiedev](www.gittab.net)**
+- 微信公众号:
 扫描下方二维码关注我的微信公众号 **rookiedev** 实时查看最新分享的文章和干货
 
 ![rookiedev](rookiedev.jpg)
