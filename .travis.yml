@@ -2,6 +2,8 @@ sudo: required
 
 language: java
 
+script: "cp .travis.settings.xml $HOME/.m2/settings.xml"
+
 jdk:
   - openjdk8
 

@@ -3,9 +3,9 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
-            <id>rookiedev</id>
-            <username>rookiedev-z</username>
-            <password>${env.GITHUB_TOKEN}</password>
+            <id>maven_nexus_repo</id>
+            <username>rookiedev</username>
+            <password>${env.PASSWORD}</password>
         </server>
     </servers>
 </settings>
