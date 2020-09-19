@@ -5,13 +5,13 @@ language: java
 jdk:
   - openjdk8
 
-services:
-  - docker
-
-cache:
-  directories:
-    - "$HOME/.m2"
-
-install: true
-
-script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
+#services:
+#  - docker
+#
+#cache:
+#  directories:
+#    - "$HOME/.m2"
+#
+#install: true
+#
+#script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
