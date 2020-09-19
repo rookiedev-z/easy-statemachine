@@ -97,4 +97,4 @@ TODO
 
 ## WeChat Public Account
 
-![rookiedev](http://images.rookiezhou.top/qrcode_for_rookiedev_430.jpg)
+![rookiedev](rookiedev.jpg)
