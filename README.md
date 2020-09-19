@@ -87,8 +87,8 @@ TODO
 
 ## More Information
 
-- 接下来我会在微信公众号: **rookiedev** 上面详细介绍该项目，敬请关注
-- 对于讨论或问题，可以添加我的微信: **rookie-dev**
+- 接下来我会在微信公众号 **rookiedev** 上面详细介绍该项目，敬请关注
+- 对于讨论或问题，可以添加我的微信 **rookie-dev**
 - 如有任何问题或者要求，请提交 [Issue](https://github.com/rookiedev-z/easy-statemachine/issues)
 
 ## License
@@ -99,8 +99,9 @@ TODO
 
 - 微信: **rookie-dev**
 - 邮箱: **rookiedev.zhou@gmail.com**
-- blog: **[rookiedev](www.gittab.net)**
-- 微信公众号:
+- blog: **[rookiedev](http://www.gittab.net)**
+- 微信公众号: **rookiedev**
+
 扫描下方二维码关注我的微信公众号 **rookiedev** 实时查看最新分享的文章和干货
 
 ![rookiedev](rookiedev.jpg)
